@@ -30,35 +30,6 @@ These apply to every phase. They are not a cleanup phase at the end.
 
 ## Next Immediate Step
 
-### Public release prep
-
-**Status:** In progress. Target: public by Wednesday 2026-09-30.
-
-**Plan:** [public-release-prep.md](public-release-prep.md), one PR, branch
-`chore/public-release-prep`
-
-Slackline goes open source. *Slackline* is the project; *slackline-read* is the
-executable that exists today; *slackline-write* will someday be a second, separate
-executable in the same project, never a mode or flag inside slackline-read. Slackline is
-not meant to be a full MCP replacement or a full API wrapper. Being read-only by
-construction is the product, and anything that weakens that promise is out of scope for
-slackline-read.
-
-Four items, in order, all before the repository goes public:
-1. MIT license, `Copyright (c) 2026 Facet Digital, LLC`, matching the sibling repos, with
-   `pyproject.toml` metadata to match.
-2. External users in shared channels (Slack Connect) render by name, marked `(ext)`,
-   instead of `unknown:` and raw `@U...` IDs: the message's `user_profile` first, then a
-   cached `users.info`, then the ID.
-3. A "What this is not" section in the README.
-4. A publication check of the whole history, not just the working tree. Anything
-   sensitive in history is reported before anything is rewritten; rewriting history
-   versus a fresh public repo is the owner's call.
-
----
-
-## Upcoming
-
 ### Phase 2.0: Hardening and ergonomics
 
 **Status:** Ready to implement
@@ -97,6 +68,10 @@ Seeds from the Read-Only MVP gate (third run), all low or nit:
 - README "Reading the output": one sentence on the `max-pages` stop and its stderr line.
 - Extend the help-text test to require `parse` and the three-argument `run`.
 
+---
+
+## Upcoming
+
 ### Phase 2.1: Search (maybe)
 
 **Status:** Not planned. Build it only if users ask.
@@ -124,8 +99,8 @@ agent.
 
 ### Phase 3.1: Packaging and distribution
 
-**Status:** Not planned. Publication is decided: open source under MIT (see Public
-release prep above).
+**Status:** Not planned. Publication is decided: open source under MIT (see Slackline
+v0.2.0 under Completed).
 
 What remains: the PyPI name, and how much the README has to explain about Slack app
 setup.
@@ -142,7 +117,7 @@ agent can be given the read binary without the write binary ever being on its di
 the skill must never become the owner of both.
 
 **Before any publication**, each of these is replaced or consciously kept (Phase 1.0 gate,
-item 14). Done in Public release prep: real colleague handles in fixtures, tests, and
+item 14). Done in v0.2.0: real colleague handles in fixtures, tests, and
 docs are synthetic stand-ins; the owner's real user ID, team ID, team name, and
 workspace URL in `tests/test_cmd_whoami.py` and the docs are placeholders; the real
 group DM name and handles cited as evidence in D6 and the resolver docstrings are
@@ -152,12 +127,38 @@ replaced with stand-ins of the same shape. The owner's own handle is replaced to
 
 ## Completed
 
-### Slackline v0.1.2: version tracking, per-repo skill copies, CI, first release
+### Slackline v0.2.0: public release prep
+
+**Status:** Complete, 2026-10-01. Tagged `v0.2.0` with a skill-only zip attached. The
+repository was recreated with its history squashed into one commit, and stays private
+until the owner has tested the release.
+
+**Plan:** [public-release-prep.md](public-release-prep.md), one PR, branch
+`chore/public-release-prep`
+
+Slackline goes open source. *Slackline* is the project; *slackline-read* is the
+executable that exists today; *slackline-write* will someday be a second, separate
+executable in the same project, never a mode or flag inside slackline-read. Slackline is
+not meant to be a full MCP replacement or a full API wrapper. Being read-only by
+construction is the product, and anything that weakens that promise is out of scope for
+slackline-read.
+
+Four items, in order, before the repository goes public:
+1. MIT license, `Copyright (c) 2026 Facet Digital, LLC`, matching the sibling repos, with
+   `pyproject.toml` metadata to match.
+2. External users in shared channels (Slack Connect) render by name, marked `(ext)`,
+   instead of `unknown:` and raw `@U...` IDs: the message's `user_profile` first, then a
+   cached `users.info`, then the ID.
+3. A "What this is not" section in the README.
+4. A publication check of the whole history, not just the working tree. Anything
+   sensitive in history is reported before anything is rewritten. The owner chose a
+   fresh repository with squashed history over rewriting it.
+
+### Slackline v0.1.2: version tracking, per-repo skill copies, CI
 
 **Status:** Complete, 2026-09-02. One version in four places with VERSION as the number
 of record, test-enforced; the skill documents per-repo copies and where a binary-less
-cloner goes; CI (tests only) pulled forward from Phase 2.0 Step 11; tagged `v0.1.2` on
-GitHub with a skill-only zip attached.
+cloner goes; CI (tests only) pulled forward from Phase 2.0 Step 11.
 
 ### Slackline skill, v0.1.1
 
