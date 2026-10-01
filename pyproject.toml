@@ -1,0 +1,37 @@
+[build-system]
+# 1.27 is the first release that reads an SPDX license expression (PEP 639).
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "slackline"
+version = "0.2.0"
+description = "Read-first Slack CLI tools for humans and AI agents. User-token only, capability-split binaries."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Scott Bradley", email = "scottwb@facetdigital.com" }]
+keywords = ["slack", "cli", "agents", "llm"]
+
+# Zero runtime dependencies, deliberately. See architecture decision D1.
+# The Slack Web API is HTTPS with JSON bodies; urllib from the standard library
+# is sufficient, and it means the tool installs anywhere Python exists with no
+# dependency tree for an agent to resolve or for anyone to audit.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+# One executable in v0.1. No umbrella dispatcher: a binary that could reach
+# write commands would defeat the reason for splitting them. See D2 and PRD R3.
+slackline-read = "slackline.cli_read:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/slackline"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The live smoke test is opt-in only and never part of the default suite (D22).
+addopts = "--ignore=tests/live"

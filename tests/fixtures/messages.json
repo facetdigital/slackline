@@ -1,0 +1,524 @@
+{
+  "_note": "Shapes reproduce the live workspace survey of 2026-08-27 (408 blocks, 12 conversations). Content is synthesized: no real message text or colleague names enter this repository (D21).",
+  "_observed_distribution": {
+    "block_types": {
+      "rich_text": 404,
+      "image": 2,
+      "context": 2
+    },
+    "rich_text_sub_blocks": {
+      "rich_text_section": 399,
+      "rich_text_list": 11,
+      "rich_text_quote": 3,
+      "rich_text_preformatted": 2
+    },
+    "rich_text_elements": {
+      "text": 744,
+      "link": 171,
+      "user": 53,
+      "emoji": 32,
+      "broadcast": 27,
+      "rich_text_section": 25
+    },
+    "empty_text_messages_carry": {
+      "attachments": 56,
+      "files": 11,
+      "blocks+files": 4
+    }
+  },
+  "plain_text": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310000.000100",
+    "text": "I think we should postpone the migration until the incident review is done."
+  },
+  "mrkdwn_markup": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310001.000100",
+    "text": "cc <@U004> and <!here>, see <https://example.com/doc|the doc> in <#C100|announcements>"
+  },
+  "rich_text_only": {
+    "type": "message",
+    "user": "U004",
+    "ts": "1756310002.000100",
+    "text": "",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "abc",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "Agreed. The remaining risk is the "
+              },
+              {
+                "type": "text",
+                "text": "credential rollover",
+                "style": {
+                  "bold": true
+                }
+              },
+              {
+                "type": "text",
+                "text": ". "
+              },
+              {
+                "type": "user",
+                "user_id": "U002"
+              },
+              {
+                "type": "text",
+                "text": " can you confirm? "
+              },
+              {
+                "type": "emoji",
+                "name": "eyes",
+                "unicode": "1f440"
+              },
+              {
+                "type": "text",
+                "text": " see "
+              },
+              {
+                "type": "link",
+                "url": "https://example.com/runbook",
+                "text": "the runbook"
+              },
+              {
+                "type": "text",
+                "text": " and ping "
+              },
+              {
+                "type": "broadcast",
+                "range": "here"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "rich_text_list_quote_and_code": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310003.000100",
+    "text": "",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "Blockers:"
+              }
+            ]
+          },
+          {
+            "type": "rich_text_list",
+            "style": "bullet",
+            "elements": [
+              {
+                "type": "rich_text_section",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "cert renewal"
+                  }
+                ]
+              },
+              {
+                "type": "rich_text_section",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "staging parity"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "rich_text_quote",
+            "elements": [
+              {
+                "type": "text",
+                "text": "we agreed to hold"
+              }
+            ]
+          },
+          {
+            "type": "rich_text_preformatted",
+            "elements": [
+              {
+                "type": "text",
+                "text": "make deploy ENV=stg"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "attachment_only": {
+    "type": "message",
+    "subtype": "bot_message",
+    "bot_id": "B01",
+    "ts": "1756310004.000100",
+    "text": "",
+    "attachments": [
+      {
+        "id": 1,
+        "fallback": "Build #4412 succeeded",
+        "pretext": "Deploy pipeline update",
+        "author_name": "CI Runner",
+        "title": "Build #4412 succeeded",
+        "title_link": "https://ci.example.com/4412",
+        "text": "All 240 checks passed in 6m12s.",
+        "footer": "example-ci",
+        "color": "36a64f",
+        "mrkdwn_in": [
+          "text"
+        ]
+      }
+    ]
+  },
+  "attachment_fallback_only": {
+    "type": "message",
+    "ts": "1756310005.000100",
+    "text": "",
+    "attachments": [
+      {
+        "id": 2,
+        "fallback": "A link preview with nothing else usable"
+      }
+    ]
+  },
+  "file_only": {
+    "type": "message",
+    "user": "U004",
+    "ts": "1756310006.000100",
+    "text": "",
+    "files": [
+      {
+        "id": "F01",
+        "name": "rollback-checklist.pdf",
+        "title": "Rollback checklist",
+        "mimetype": "application/pdf",
+        "filetype": "pdf",
+        "pretty_type": "PDF",
+        "size": 184320,
+        "user": "U004"
+      }
+    ]
+  },
+  "blocks_and_files": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310007.000100",
+    "text": "",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "Here is the diagram"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "files": [
+      {
+        "id": "F02",
+        "name": "arch.png",
+        "pretty_type": "PNG",
+        "size": 20480
+      }
+    ]
+  },
+  "image_block": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310008.000100",
+    "text": "",
+    "blocks": [
+      {
+        "type": "image",
+        "alt_text": "latency graph",
+        "image_url": "https://example.com/g.png"
+      }
+    ]
+  },
+  "context_block": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310009.000100",
+    "text": "",
+    "blocks": [
+      {
+        "type": "context",
+        "elements": [
+          {
+            "type": "mrkdwn",
+            "text": "posted from the incident channel"
+          }
+        ]
+      }
+    ]
+  },
+  "section_block": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310010.000100",
+    "text": "",
+    "blocks": [
+      {
+        "type": "header",
+        "text": {
+          "type": "plain_text",
+          "text": "Incident 4412"
+        }
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "Status: *resolved* by <@U004>"
+        }
+      },
+      {
+        "type": "section",
+        "fields": [
+          {
+            "type": "mrkdwn",
+            "text": "*Severity*\nSEV-2"
+          },
+          {
+            "type": "mrkdwn",
+            "text": "*Duration*\n41m"
+          }
+        ]
+      },
+      {
+        "type": "divider"
+      }
+    ]
+  },
+  "with_reactions_and_edit": {
+    "type": "message",
+    "user": "U004",
+    "ts": "1756310011.000100",
+    "text": "Rollback checklist is ready.",
+    "edited": {
+      "user": "U004",
+      "ts": "1756310099.000000"
+    },
+    "reactions": [
+      {
+        "name": "+1",
+        "count": 3,
+        "users": [
+          "U001",
+          "U002",
+          "U004"
+        ]
+      },
+      {
+        "name": "tada",
+        "count": 1,
+        "users": [
+          "U001"
+        ]
+      }
+    ]
+  },
+  "thread_parent": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310012.000100",
+    "text": "Migration plan draft",
+    "thread_ts": "1756310012.000100",
+    "reply_count": 2,
+    "reply_users_count": 2
+  },
+  "thread_reply": {
+    "type": "message",
+    "user": "U004",
+    "ts": "1756310013.000100",
+    "text": "Looks right to me.",
+    "thread_ts": "1756310012.000100"
+  },
+  "channel_join": {
+    "type": "message",
+    "subtype": "channel_join",
+    "user": "U004",
+    "ts": "1756310014.000100",
+    "text": "<@U004> has joined the channel"
+  },
+  "channel_leave": {
+    "type": "message",
+    "subtype": "channel_leave",
+    "user": "U004",
+    "ts": "1756310015.000100",
+    "text": "<@U004> has left the channel"
+  },
+  "tombstone": {
+    "type": "message",
+    "subtype": "tombstone",
+    "ts": "1756310016.000100",
+    "text": "This message was deleted."
+  },
+  "retention_threshold": {
+    "type": "message",
+    "subtype": "retention_threshold",
+    "ts": "1756310017.000100",
+    "text": "Messages before this point were removed by the retention policy."
+  },
+  "thread_broadcast": {
+    "type": "message",
+    "subtype": "thread_broadcast",
+    "user": "U002",
+    "ts": "1756310018.000100",
+    "thread_ts": "1756310012.000100",
+    "text": "Sharing this to the channel."
+  },
+  "bot_with_text": {
+    "type": "message",
+    "subtype": "bot_message",
+    "bot_id": "B02",
+    "username": "Deploy Bot",
+    "ts": "1756310019.000100",
+    "text": "Deployed v2.4.1 to production."
+  },
+  "unknown_user": {
+    "type": "message",
+    "user": "U999",
+    "ts": "1756310020.000100",
+    "text": "Message from someone no longer in the directory."
+  },
+  "genuinely_empty": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310021.000100",
+    "text": "",
+    "subtype": "some_future_slack_subtype"
+  },
+  "text_and_equivalent_blocks": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310022.000100",
+    "text": "@channel All `Q3` reports are filed. Review starts Monday.",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "broadcast",
+                "range": "channel"
+              },
+              {
+                "type": "text",
+                "text": " All "
+              },
+              {
+                "type": "text",
+                "text": "Q3",
+                "style": {
+                  "code": true
+                }
+              },
+              {
+                "type": "text",
+                "text": " reports are filed. Review starts Monday."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "text_and_additional_blocks": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310023.000100",
+    "text": "Deploy finished.",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "Something completely different in the blocks."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "text_superset_of_blocks": {
+    "type": "message",
+    "user": "U002",
+    "ts": "1756310040.000100",
+    "text": "Deploy finished. Remember to rotate the staging credential.",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "Deploy finished."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "external_user": {
+    "type": "message",
+    "user": "U801",
+    "user_team": "T2",
+    "source_team": "T2",
+    "user_profile": {
+      "avatar_hash": "g0000000000a",
+      "first_name": "Jane",
+      "real_name": "Jane Doe",
+      "display_name": "jane",
+      "team": "T2",
+      "name": "jane.doe",
+      "is_restricted": false,
+      "is_ultra_restricted": false
+    },
+    "ts": "1756310030.000100",
+    "text": "Thanks, we will review the proposal on our side and come back by Friday."
+  },
+  "mentions_external": {
+    "type": "message",
+    "user": "U002",
+    "user_team": "T1",
+    "ts": "1756310040.000100",
+    "text": "<@U801> sounds good. Looping in <@U802> for the contract side."
+  }
+}

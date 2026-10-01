@@ -1,0 +1,180 @@
+{
+  "_note": "Shapes reproduce what reconnaissance observed in the live workspace on 2026-08-27. Content is synthesized: no real colleague names or message text enter this repository (D21).",
+  "users": [
+    {
+      "id": "U001",
+      "name": "sam",
+      "deleted": false,
+      "is_bot": false,
+      "profile": {
+        "real_name": "Sam Rivera",
+        "display_name": "sam",
+        "email": "sam@example.com"
+      }
+    },
+    {
+      "id": "U002",
+      "name": "joan",
+      "deleted": false,
+      "is_bot": false,
+      "profile": {
+        "real_name": "Joan Archer",
+        "display_name": "Joan",
+        "email": "joan@example.com"
+      }
+    },
+    {
+      "id": "U003",
+      "name": "joan-w",
+      "deleted": false,
+      "is_bot": false,
+      "profile": {
+        "real_name": "Joan Wong",
+        "display_name": "Joan W",
+        "email": "jwong@example.com"
+      }
+    },
+    {
+      "id": "U004",
+      "name": "kim",
+      "deleted": false,
+      "is_bot": false,
+      "profile": {
+        "real_name": "Kim Nelson",
+        "display_name": "",
+        "email": "kim@example.com"
+      }
+    },
+    {
+      "id": "U005",
+      "name": "deactivated",
+      "deleted": true,
+      "is_bot": false,
+      "profile": {
+        "real_name": "Former Colleague",
+        "display_name": ""
+      }
+    },
+    {
+      "id": "U006",
+      "name": "deploybot",
+      "deleted": false,
+      "is_bot": true,
+      "profile": {
+        "real_name": "Deploy Bot",
+        "display_name": ""
+      }
+    },
+    {
+      "id": "USLACKBOT",
+      "name": "slackbot",
+      "deleted": false,
+      "is_bot": true,
+      "profile": {
+        "real_name": "Slackbot",
+        "display_name": ""
+      }
+    },
+    {
+      "id": "U007",
+      "name": "jamien",
+      "deleted": false,
+      "is_bot": false,
+      "profile": {
+        "real_name": "Jamie Nelson",
+        "display_name": "Jamie",
+        "email": "jamie@example.com"
+      }
+    }
+  ],
+  "conversations": [
+    {
+      "id": "C100",
+      "name": "announcements",
+      "is_channel": true,
+      "is_private": false,
+      "is_im": false,
+      "is_mpim": false,
+      "is_archived": false,
+      "num_members": 42
+    },
+    {
+      "id": "C101",
+      "name": "engineering",
+      "is_channel": true,
+      "is_private": true,
+      "is_im": false,
+      "is_mpim": false,
+      "is_archived": false,
+      "num_members": 8
+    },
+    {
+      "id": "D200",
+      "is_im": true,
+      "is_mpim": false,
+      "is_private": true,
+      "user": "U002",
+      "is_archived": false
+    },
+    {
+      "id": "D201",
+      "is_im": true,
+      "is_mpim": false,
+      "is_private": true,
+      "user": "U004",
+      "is_archived": false
+    },
+    {
+      "id": "G300",
+      "name": "mpdm-sam--joan--kim-1",
+      "is_mpim": true,
+      "is_private": true,
+      "is_im": false,
+      "is_archived": false
+    },
+    {
+      "id": "G301",
+      "name": "mpdm-sam--joan--kim-1",
+      "is_mpim": true,
+      "is_private": true,
+      "is_im": false,
+      "is_archived": false
+    },
+    {
+      "id": "G302",
+      "name": "mpdm-sam--joan-w--kim-1",
+      "is_mpim": true,
+      "is_private": true,
+      "is_im": false,
+      "is_archived": false
+    },
+    {
+      "id": "C102",
+      "name": "old-project",
+      "is_channel": true,
+      "is_private": false,
+      "is_im": false,
+      "is_mpim": false,
+      "is_archived": true,
+      "num_members": 3
+    },
+    {
+      "id": "C103",
+      "name": "engineering",
+      "is_channel": true,
+      "is_private": true,
+      "is_im": false,
+      "is_mpim": false,
+      "is_archived": true,
+      "num_members": 5
+    },
+    {
+      "id": "G399",
+      "name": "mpdm-sam--joan--kim-2",
+      "is_mpim": true,
+      "is_private": true,
+      "is_im": false,
+      "is_archived": true
+    }
+  ]
+}

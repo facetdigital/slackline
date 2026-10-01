@@ -1,0 +1,28 @@
+# The offline suite on every PR and on main. It needs no secret and touches no
+# network by design (D21, CLAUDE.md invariant 10); the live checks under
+# tests/live are excluded by addopts and are opt-in only.
+name: tests
+# The job needs no token scopes at all, and a superseded push has no claim on
+# runner minutes.
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e ".[dev]"
+      - run: python -m pytest -q
