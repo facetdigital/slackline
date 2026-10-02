@@ -127,8 +127,8 @@ uv tool install .
 # Upgrading: the same command with --force, from the new release URL or an updated clone
 uv tool install --force .   # or: pipx reinstall slackline
 
-# Or run it without installing
-python3 -m slackline.cli_read --version
+# Or run it without installing, from the root of a clone
+PYTHONPATH=src python3 -m slackline.cli_read --version
 ```
 
 Confirm it landed:

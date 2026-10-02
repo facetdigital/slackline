@@ -73,7 +73,7 @@ write commands would defeat the reason for splitting the binaries.
 slackline-read = "slackline.cli_read:main"
 ```
 
-`python3 -m slackline.cli_read` works identically for the no-install case.
+`PYTHONPATH=src python3 -m slackline.cli_read`, from the root of a clone, works identically for the no-install case.
 
 ---
 
