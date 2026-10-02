@@ -97,3 +97,22 @@ def test_the_version_is_tracked_in_all_four_places():
     frontmatter = skill.split("---", 2)[1]
     skill_version = re.search(r"^version: (.+)$", frontmatter, flags=re.M).group(1).strip()
     assert on_record == declared == slackline.__version__ == skill_version
+
+
+def test_the_readme_installs_the_current_release():
+    """The quick start installs the release wheel by URL, and that URL names a
+    version. Without this check a release would leave the README installing the
+    previous one, silently, because nothing else reads that line."""
+    import pathlib
+    import re
+
+    import slackline
+
+    root = pathlib.Path(slackline.__file__).parent.parent.parent
+    on_record = (root / "VERSION").read_text().strip()
+    readme = (root / "README.md").read_text()
+    urls = re.findall(
+        r"releases/download/v([0-9][^/]*)/slackline-([0-9][^-]*)-py3-none-any\.whl", readme
+    )
+    assert urls, "the README quick start should install the release wheel by URL"
+    assert all(tag == on_record and wheel == on_record for tag, wheel in urls), urls

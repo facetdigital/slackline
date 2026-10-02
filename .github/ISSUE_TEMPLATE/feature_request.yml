@@ -1,0 +1,30 @@
+name: Feature request
+description: Something slackline-read should do for reading Slack.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        slackline-read is read-only by construction, and that is the product. Please read
+        "What this is not" in the README first. Anything that posts, reacts, edits, or
+        otherwise writes to Slack belongs to the planned slackline-write, a separate
+        executable, not to slackline-read.
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This only needs to read from Slack, never to write.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like
+      description: The command or flag you have in mind, if you have one.
