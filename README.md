@@ -1,5 +1,12 @@
 # Slackline
 
+[![tests](https://github.com/facetdigital/slackline/actions/workflows/tests.yml/badge.svg)](https://github.com/facetdigital/slackline/actions/workflows/tests.yml)
+[![release](https://img.shields.io/github/v/release/facetdigital/slackline)](https://github.com/facetdigital/slackline/releases/latest)
+[![python](https://img.shields.io/badge/python-3.9%2B-blue)](pyproject.toml)
+[![runtime dependencies](https://img.shields.io/badge/runtime%20dependencies-0-brightgreen)](pyproject.toml)
+[![slack access](https://img.shields.io/badge/slack%20access-read--only-brightgreen)](#the-read-only-guarantee)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 Read-first Slack CLI tools for humans and AI agents. User-token only, no bot, no app
 identity, no server.
 
@@ -16,6 +23,53 @@ interpretation. Neither does the other's job.
 against the live workspace on 2026-08-28 (the six PRD success criteria; see the Phase 1.0
 entry in the [roadmap](docs/plans/development-roadmap.md)). See
 [what is not built](#what-is-not-built-yet) before you plan around it.
+
+---
+
+## Quick start
+
+About five minutes. You need Python 3.9 or newer, and a Slack workspace where you can
+install an app (or ask an admin to approve one).
+
+**1. Install.** From the latest release, no clone needed:
+
+```bash
+uv tool install https://github.com/facetdigital/slackline/releases/download/v0.2.0/slackline-0.2.0-py3-none-any.whl
+# or: pipx install https://github.com/facetdigital/slackline/releases/download/v0.2.0/slackline-0.2.0-py3-none-any.whl
+```
+
+Or from a clone, if you want the source and the [skill](#the-slackline-skill):
+
+```bash
+git clone https://github.com/facetdigital/slackline.git
+cd slackline && uv tool install .
+```
+
+**2. Create a Slack app and get a user token.** At
+[api.slack.com/apps](https://api.slack.com/apps), choose **Create New App**, then **From a
+manifest**, pick your workspace, and paste
+[`docs/slack-app-manifest.yml`](docs/slack-app-manifest.yml). It asks for read scopes on a
+user token and nothing else: no bot, no write scope. Choose **Install to Workspace**,
+then copy the **User OAuth Token** (`xoxp-...`) from **OAuth & Permissions**.
+
+**3. Hand it the token, and check who you are.** `read -rs` takes the token without
+echoing it or writing it to your shell history:
+
+```bash
+read -rs SLACK_USER_TOKEN && export SLACK_USER_TOKEN
+slackline-read whoami
+```
+
+**4. Read something.**
+
+```bash
+slackline-read channels --match general
+slackline-read conversation --channel '#general' --since 24h
+```
+
+Next: [Credentials](#credentials) to keep the token somewhere better than a shell
+variable, [Commands](#commands) for everything else, and
+[Using with Claude Code](#using-with-claude-code) to hand it to an agent.
 
 ---
 
@@ -58,13 +112,18 @@ Being read-only by construction is the product. So, to save everyone a round tri
 
 ## Install
 
-Requires Python 3.9 or newer. Zero runtime dependencies.
+Requires Python 3.9 or newer. Zero runtime dependencies. Each
+[release](https://github.com/facetdigital/slackline/releases) carries a wheel, a source
+tarball, and the skill as a zip.
 
 ```bash
-# On your PATH, isolated, the normal way to use it
+# From a release, on your PATH, isolated
+uv tool install https://github.com/facetdigital/slackline/releases/download/v0.2.0/slackline-0.2.0-py3-none-any.whl
+
+# From a clone
 uv tool install .
 
-# Upgrading an existing install from an updated clone
+# Upgrading: the same command with --force, from the new release URL or an updated clone
 uv tool install --force .   # or: pipx reinstall slackline
 
 # Or run it without installing
@@ -366,7 +425,9 @@ whether it is stale.
 
 Bugs, rough edges, or confusing behavior in the binary or the skill are worth a GitHub
 issue on this repo. The bar for "worth it" is low. Before asking for a new command, read
-[what this is not](#what-this-is-not).
+[what this is not](#what-this-is-not). Pull requests are welcome; start with
+[CONTRIBUTING.md](CONTRIBUTING.md). Security problems go through
+[SECURITY.md](SECURITY.md), not an issue.
 
 ---
 
@@ -408,34 +469,8 @@ their `team`. Someone it cannot name at all renders as their ID; the read still 
 
 ## Development
 
-The test suite needs `pytest`, which lives in the project's virtualenv. Either use its
-interpreter directly:
-
-```bash
-.venv/bin/python -m pytest -q          # offline: no network, no secrets, no token
-```
-
-Or activate the virtualenv first, after which the plain form works:
-
-```bash
-source .venv/bin/activate
-python3 -m pytest -q
-```
-
-Without one of those two, `python3` resolves to the system or Xcode interpreter, which has
-no `pytest` installed, and bare `python` is usually not on `PATH` at all on macOS.
-
-The default suite runs entirely against fixtures. The live checks are opt-in and separate,
-and they do reach Slack with your real token, read-only:
-
-```bash
-SLACKLINE_LIVE_TEST=1 .venv/bin/python -m pytest tests/live -q
-```
-
-Without `SLACKLINE_LIVE_TEST=1` they skip cleanly, which is why they never run by accident.
-
-Tests are written expecting correct behavior, fail against the broken code, and are never
-edited afterward to make them pass.
+Setting up a checkout, running the offline suite and the opt-in live checks, the rules
+every change follows, and how releases are cut: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 

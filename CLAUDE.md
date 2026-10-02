@@ -74,8 +74,11 @@ removes `SLACK_USER_TOKEN` and fails any test that spawns a credential helper or
 One version for the whole thing: the binary and the skill are released together and
 share it. It is declared in four places, `VERSION` (the number of record),
 `pyproject.toml`, `src/slackline/__init__.py`, and the skill frontmatter's `version:`,
-and a test keeps the four equal, so a bump touches all four in one commit. Releases are
-tagged `vX.Y.Z` with a skill-only zip attached. Installed artifacts are updated
+and a test keeps the four equal, so a bump touches all four in one commit. The README
+quick start installs the release wheel by a URL that names the version; a second test
+keeps that URL equal to `VERSION`, so a bump updates it too. Releases are
+tagged `vX.Y.Z` with the wheel, the source tarball, and a skill-only zip attached
+(steps in CONTRIBUTING.md). Installed artifacts are updated
 independently (a binary via `uv tool install --force`, skill copies via re-copy), so
 installed versions can drift from each other; that is accepted, deliberately. Do not
 build machinery to reconcile them.

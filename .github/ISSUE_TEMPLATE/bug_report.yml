@@ -1,0 +1,44 @@
+name: Bug report
+description: slackline-read or the skill did something wrong or confusing.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please do not paste tokens, real message content, or other
+        people's names; replace them with placeholders. Security problems go through
+        SECURITY.md, not an issue.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `slackline-read --version`.
+      placeholder: slackline-read 0.2.0
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: What you ran
+      description: The full command, with any token or private names replaced.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Output, stderr, and the exit code (`echo $?`).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: macOS 14, Python 3.13, installed with uv
