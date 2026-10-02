@@ -69,7 +69,8 @@ slackline-read conversation --channel '#general' --since 24h
 
 Next: [Credentials](#credentials) to keep the token somewhere better than a shell
 variable, [Commands](#commands) for everything else, and
-[Using with Claude Code](#using-with-claude-code) to hand it to an agent.
+[Using with Claude Code](#using-with-claude-code) to hand it to an agent, including the
+[skill](#the-slackline-skill) that teaches agents to use it.
 
 ---
 
@@ -401,18 +402,27 @@ interactive. The `.env` file is for developing Slackline itself, not for using i
 The repo ships a Claude Code skill at [.claude/skills/slackline](.claude/skills/slackline/SKILL.md)
 that makes agents reach for `slackline-read` on any Slack read, with precedence over
 any Slack MCP or API the session has. Inside this repo it is active automatically.
-To make it available in every session:
+
+Install it either for every Claude Code session, or for one repo only, where it activates
+just for sessions in that repo.
+
+**From a release** (no clone needed): download `slackline-skill-X.Y.Z.zip` from the
+[latest release](https://github.com/facetdigital/slackline/releases/latest), then:
+
+```bash
+unzip slackline-skill-X.Y.Z.zip -d ~/.claude/skills/              # every session
+unzip slackline-skill-X.Y.Z.zip -d /path/to/repo/.claude/skills/  # one repo only
+```
+
+**From a clone:**
 
 ```bash
 cp -r .claude/skills/slackline ~/.claude/skills/
 ```
 
-(Or symlink that directory from your clone if you prefer updates to arrive with
-`git pull`.) After upgrading Slackline, re-copy the skill alongside reinstalling the
-binary.
-
-You can also give the skill to a specific repo instead of every session: copy the same
-directory into that repo's `.claude/skills/`, and it activates only for sessions there.
+or copy the same directory into another repo's `.claude/skills/` for that repo only. (Or
+symlink it from your clone if you prefer updates to arrive with `git pull`.) After
+upgrading Slackline, replace the skill alongside reinstalling the binary.
 The skill never bundles the binary; someone who clones such a repo onto a machine
 without `slackline-read` gets told by the skill itself where to get it. The skill's
 frontmatter carries `version:`, matching the Slackline release it shipped with, so a
