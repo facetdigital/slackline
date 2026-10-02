@@ -83,6 +83,22 @@ discovery plus bounded reads have covered every real case. Search results are
 relevance-ranked and cross-channel, a genuinely different contract from `conversation`
 that deserves its own design rather than being bolted onto it.
 
+### Phase 2.2: Which conversations have activity since T (idea)
+
+**Status:** Not planned. Captured so it is not lost; build only when asked.
+
+A caller who wants "anything new in any DM or group DM since T", without naming people,
+today has to read every `im` and `mpim` conversation. On a workspace with about 340 of
+them that is one `conversations.history` call each: about 105 seconds cold, and about
+390 seconds when run again straight away, which looks like Slack's per-method rate
+limit. A read-only way to ask which conversations have activity since T first, then read
+only those, would turn that into seconds.
+
+Design question to settle first: which read-only method can answer it in a few calls.
+`search.messages` with a date filter is the obvious candidate and would make this ride on
+Phase 2.1 and its `search:read` scope. Anything per-conversation keeps the N-calls cost
+this exists to remove. Whatever it is must stay on the D3 allowlist.
+
 ### Phase 3.0: `slackline-write`
 
 **Status:** Not planned.
