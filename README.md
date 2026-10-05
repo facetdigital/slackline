@@ -124,8 +124,10 @@ uv tool install https://github.com/facetdigital/slackline/releases/download/v0.2
 # From a clone
 uv tool install .
 
-# Upgrading: the same command with --force, from the new release URL or an updated clone
-uv tool install --force .   # or: pipx reinstall slackline
+# Upgrading: from the new release URL, or from an updated clone. --reinstall makes uv
+# rebuild the clone; without it, uv reuses its cached build whenever the version number
+# has not changed, and you keep the old code.
+uv tool install --force --reinstall .   # or: pipx reinstall slackline
 
 # Or run it without installing, from the root of a clone
 PYTHONPATH=src python3 -m slackline.cli_read --version

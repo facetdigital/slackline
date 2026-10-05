@@ -79,7 +79,7 @@ quick start installs the release wheel by a URL that names the version; a second
 keeps that URL equal to `VERSION`, so a bump updates it too. Releases are
 tagged `vX.Y.Z` with the wheel, the source tarball, and a skill-only zip attached
 (steps in CONTRIBUTING.md). Installed artifacts are updated
-independently (a binary via `uv tool install --force`, skill copies via re-copy), so
+independently (a binary via `uv tool install --force --reinstall`, skill copies via re-copy), so
 installed versions can drift from each other; that is accepted, deliberately. Do not
 build machinery to reconcile them.
 
