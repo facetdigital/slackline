@@ -30,6 +30,22 @@ These apply to every phase. They are not a cleanup phase at the end.
 
 ## Next Immediate Step
 
+### A bare name is a name, not a handle
+
+**Status:** Decided, not planned. First thing after the v0.2.0 manual test pass is
+merged, ahead of Phase 2.0.
+
+Today the `@` in a user selector is optional, and an exact handle match short-circuits,
+so `--with Kevin` silently resolves to whoever holds the handle `kevin`, even when two
+people are named Kevin. Found in manual testing: an agent told "read my DM with Kevin"
+would get one of them without being told the other exists, which is the guessing D8
+forbids. The change: an exact handle wins only when the selector starts with `@`
+(`@kevin`). A bare word is matched against handles, real names, and display names
+together, and more than one match is exit 4 with the candidates, as any other
+ambiguity is. This reverses a tested decision (the optional `@`), so the plan must say
+which tests change meaning and why, and the README, the skill, and the resolver's help
+must say "use `@handle` to pick one person".
+
 ### Phase 2.0: Hardening and ergonomics
 
 **Status:** Ready to implement
