@@ -77,3 +77,21 @@ def test_json_and_raw_escape_c1_too(capsys):
     format_raw([dict(message("a\x9bb"), _raw={"text": "a\x9bb"})])
     out = capsys.readouterr().out
     assert "\\u009b" in out and "\x9b" not in out
+
+
+def channel_row(archived):
+    return {"type": "conversation", "id": "C102", "kind": "public", "name": "old-launch",
+            "label": "#old-launch", "members": [], "num_members": 4, "archived": archived}
+
+
+def test_an_archived_conversation_is_marked_in_the_channel_list():
+    """`channels --include-archived` exists to show archived rows. Rendered without
+    a marker they are indistinguishable from live ones, so the flag that asked for
+    them would appear to have done nothing."""
+    out = render_records([channel_row(archived=True)])
+    assert "#old-launch" in out
+    assert "(archived)" in out
+
+
+def test_a_live_conversation_carries_no_archived_marker():
+    assert "archived" not in render_records([channel_row(archived=False)])

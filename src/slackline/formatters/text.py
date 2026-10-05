@@ -77,6 +77,10 @@ def _conversation(record):
         return header + "\n\n"
 
     parts = [f"{record['id']:<12} {record['kind']:<8} {record['label']}"]
+    if record.get("archived"):
+        # Archived rows only appear under --include-archived; unmarked, they
+        # would read as live conversations and the flag as a no-op.
+        parts.append("  (archived)")
     if record["kind"] == "mpim" and record.get("name"):
         # Surfacing the raw name matters: two rows can share one, and the reader
         # needs to see that they are nonetheless different conversations.

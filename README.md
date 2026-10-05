@@ -210,7 +210,8 @@ slackline-read channels --match eng
 slackline-read channels --include-archived
 ```
 
-Archived conversations are hidden unless asked for. Their history is still readable by
+Archived conversations are hidden unless asked for, and marked `(archived)` when shown;
+in JSON output each row carries `"archived"`. Their history is still readable by
 ID, and by name when no live conversation carries that name; a name that both a live and
 an archived conversation carry resolves to the live one, and the archived namesakes are
 announced on stderr. A conversations cache written before archived rows were fetched lacks them until
