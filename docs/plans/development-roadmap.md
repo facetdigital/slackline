@@ -115,6 +115,26 @@ Design question to settle first: which read-only method can answer it in a few c
 Phase 2.1 and its `search:read` scope. Anything per-conversation keeps the N-calls cost
 this exists to remove. Whatever it is must stay on the D3 allowlist.
 
+### Phase 2.3: Read shared files (idea)
+
+**Status:** Not planned. Low priority, no date. Captured so it is not lost.
+
+The token has no `files:read` scope, so a skill cannot download a file someone shares in
+a DM or channel; a person has to save each one by hand and hand it over. The motivating
+case is a contractor who DMs a monthly time-log CSV that is reconciled against the
+time-tracking system before invoicing, and every month it stalls on that manual save.
+The general need is the same shape: timesheets, invoices, any shared file a skill has to
+read.
+
+Likely shape: add `files:read` (to the existing token, or a separate one) plus a small
+read-only fetch command, for example `slackline-read file <id or permalink> --out <path>`.
+Read-only by construction: the only API change is an addition to the D3 allowlist, the
+credential comes through the existing chain (D4a, D4b), and nothing new is written at
+rest. Design questions to settle first: a size ceiling; a refusal for files Slack does
+not host itself (external and Google Drive links); and what the transcript renderer
+prints for a file share (D9) so a model can tell that a file is fetchable, and with what
+ID.
+
 ### Phase 3.0: `slackline-write`
 
 **Status:** Not planned.
