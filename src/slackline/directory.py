@@ -235,21 +235,28 @@ class Directory:
     def find_users(self, selector: str) -> List[Dict[str, Any]]:
         """Match a selector against handle, real name, and display name.
 
-        An exact handle match short-circuits. Without that, '@joan' would be
-        ambiguous purely because '@joan-w' also exists, which would make the
-        common case fail for a reason the caller cannot act on.
+        '@handle' asks for one person by handle, and an exact handle match
+        short-circuits. Without that, '@joan' would be ambiguous purely because
+        '@joan-w' also exists, which would make the common case fail for a
+        reason the caller cannot act on. A bare word is a name: 'joan' asks for
+        anyone called Joan, so it never short-circuits, even when it happens to
+        be someone's handle.
         """
-        needle = (selector or "").lstrip("@").strip().lower()
+        raw = (selector or "").strip()
+        by_handle = raw.startswith("@")
+        needle = raw.lstrip("@").strip().lower()
         if not needle:
             return []
         users = list(self.users().values())
 
         # Slack handles are unique per workspace, so an exact handle match is
-        # unambiguous by construction and wins outright. That is what lets
-        # '@joan' resolve even though '@joan-w' also exists.
-        exact_handle = [u for u in users if u["handle"].lower() == needle]
-        if exact_handle:
-            return exact_handle
+        # unambiguous by construction and wins outright, but only when the '@'
+        # says a handle is what the caller meant. Letting a bare 'kevin' win
+        # this way picked one of two Kevins without mentioning the other (D8).
+        if by_handle:
+            exact_handle = [u for u in users if u["handle"].lower() == needle]
+            if exact_handle:
+                return exact_handle
 
         # Display and real names are NOT unique, so they must never
         # short-circuit. Falling through to gather every candidate is what turns

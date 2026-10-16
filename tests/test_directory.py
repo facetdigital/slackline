@@ -41,8 +41,18 @@ def test_users_are_indexed_by_id_handle_and_real_name(index):
     assert index.find_users("Joan Archer")[0]["id"] == "U002"
 
 
-def test_the_at_prefix_is_optional(index):
-    assert index.find_users("joan") == index.find_users("@joan")
+def test_a_bare_name_is_a_name_search_even_when_it_is_also_a_handle(index):
+    """'joan' is U002's handle, and Joan Wong is also a Joan. Without the '@'
+    the caller asked for a person named Joan, and there are two. Letting the
+    handle short-circuit here picked one of them silently, which is the guess D8
+    forbids; found in manual testing as '--with Kevin' with two Kevins."""
+    assert {m["id"] for m in index.find_users("joan")} == {"U002", "U003"}
+
+
+def test_an_at_selector_that_is_nobodys_handle_still_searches(index):
+    """The '@' asks for an exact handle; when there is none it falls back to
+    the same search a bare word gets, rather than failing outright."""
+    assert {m["id"] for m in index.find_users("@joa")} == {"U002", "U003"}
 
 
 def test_an_exact_handle_wins_over_a_prefix_match(index):

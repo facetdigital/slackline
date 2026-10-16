@@ -108,7 +108,8 @@ class Resolver:
             )
         if len(matches) > 1:
             raise AmbiguousSelector(
-                f"ambiguous user selector {selector!r}",
+                f"ambiguous user selector {selector!r}. Pass one @handle from "
+                "the candidates to pick one person.",
                 candidates=[
                     f"{u['id']}  {u['real_name'] or u['display']} (@{u['handle']})"
                     for u in sorted(matches, key=lambda u: u["handle"])

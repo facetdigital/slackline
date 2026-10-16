@@ -105,6 +105,12 @@ def test_users_matches_on_handle_and_real_name(ctx, capsys):
     assert {r["id"] for r in rows} == {"U004", "U007"}
 
 
+def test_users_match_lists_everyone_a_bare_name_matches(ctx, capsys):
+    """A search must not hide Joan Wong because 'joan' is also a handle."""
+    _, rows = records(ctx, users_cmd, ["--match", "joan"], capsys)
+    assert {r["id"] for r in rows} == {"U002", "U003"}
+
+
 def test_text_output_is_a_readable_table(ctx, capsys):
     ctx.fmt = "text"
     users_cmd.run(ctx, ["--match", "kim"])

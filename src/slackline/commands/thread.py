@@ -34,7 +34,9 @@ Read one thread: the root message and every reply beneath it.
 
 Selectors (use exactly one kind, and it must name exactly one conversation):
   --channel NAME_OR_ID     The channel the thread lives in
-  --with PERSON            Repeatable. Group DMs match on member set, not name
+  --with PERSON            Repeatable. Group DMs match on member set, not name.
+                           PERSON is @handle for exactly that person; a bare
+                           name searches names and fails if two people match
   --conversation ID
 
 Required:

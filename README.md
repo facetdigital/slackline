@@ -262,7 +262,9 @@ slackline-read conversation --channel '#eng' --channel '#ops' --since 24h
 ```
 
 Selectors: `--channel`, `--with` (repeatable; group DMs are matched on **member set**,
-never on name), `--conversation ID`. `--channel` and `--conversation` may be repeated to
+never on name), `--conversation ID`. Name a person by `@handle` to pick exactly that
+person. A bare name is a search: `--with Kevin` matches handles, real names, and display
+names, and when two people match you get exit 4 with the candidates, never a guess. `--channel` and `--conversation` may be repeated to
 read several conversations in one invocation; each gets its own header and trailing
 `page` record.
 

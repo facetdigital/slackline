@@ -65,6 +65,11 @@ newer release means the copy may be stale.
    Exit 4 means ambiguous: the candidates are printed; pick one and use
    `--conversation ID`. Never guess.
 
+   Name people by `@handle`, which picks exactly that person. A bare name is a
+   search: "Kevin" matches every Kevin and is exit 4 when there are two. When the
+   user gives only a first name, run `resolve` with it, and if it is ambiguous,
+   ask the user which person they meant rather than choosing.
+
 3. Read, bounded and time-windowed:
 
    ```bash
