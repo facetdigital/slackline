@@ -26,7 +26,9 @@ Selectors (use exactly one kind):
   --channel NAME_OR_ID   Repeatable
   --with PERSON          Repeatable. A group DM is matched by its member set,
                          never by its name, because Slack's group DM names are
-                         neither unique nor kept current.
+                         neither unique nor kept current. PERSON is @handle
+                         for exactly that person; a bare name searches names
+                         and fails if two people match.
   --conversation ID      Repeatable
 
 Options:

@@ -310,6 +310,15 @@ membership Slack cannot report (`channel_not_found`) is skipped with a note rath
 failing a resolution a live row satisfies. When only archived rows match,
 they are returned. Two live matches remain a hard failure.
 
+**People: `@handle` picks one, a bare word searches. Added 2026-10-16.** Slack handles are
+unique per workspace, so an exact handle match is unambiguous and wins outright, which is
+what lets `@joan` resolve although `@joan-w` also exists. It wins only when the selector
+starts with `@`. A bare word is a name: `--with Kevin` is matched against handles, real
+names, and display names together, and two Kevins are exit 4 even when one of them holds
+the handle `kevin`. This reverses the earlier rule that made the `@` optional, under which
+that same selector silently picked whoever held the handle, a guess the caller was never
+told about. An `@` selector that is nobody's handle falls back to the same search.
+
 ---
 
 ## 5. Rendering, the core of the product

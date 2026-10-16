@@ -30,22 +30,6 @@ These apply to every phase. They are not a cleanup phase at the end.
 
 ## Next Immediate Step
 
-### A bare name is a name, not a handle
-
-**Status:** Decided, not planned. First thing after the v0.2.0 manual test pass is
-merged, ahead of Phase 2.0.
-
-Today the `@` in a user selector is optional, and an exact handle match short-circuits,
-so `--with Kevin` silently resolves to whoever holds the handle `kevin`, even when two
-people are named Kevin. Found in manual testing: an agent told "read my DM with Kevin"
-would get one of them without being told the other exists, which is the guessing D8
-forbids. The change: an exact handle wins only when the selector starts with `@`
-(`@kevin`). A bare word is matched against handles, real names, and display names
-together, and more than one match is exit 4 with the candidates, as any other
-ambiguity is. This reverses a tested decision (the optional `@`), so the plan must say
-which tests change meaning and why, and the README, the skill, and the resolver's help
-must say "use `@handle` to pick one person".
-
 ### Phase 2.0: Hardening and ergonomics
 
 **Status:** Ready to implement
@@ -178,6 +162,23 @@ replaced with stand-ins of the same shape. The owner's own handle is replaced to
 ---
 
 ## Completed
+
+### A bare name is a name, not a handle
+
+**Status:** Complete, 2026-10-16. Branch `feat/bare-name-selectors`.
+
+Found in the v0.2.0 manual test pass: `--with Kevin` silently resolved to whoever held
+the handle `kevin` while a second Kevin existed, the guess D8 forbids. An exact handle
+now wins only when the selector starts with `@`; a bare word searches handles, real
+names, and display names together, and two matches are exit 4 with the candidates,
+whose message names `@handle` as the way to pick one. An `@` selector that is nobody's
+handle falls back to the same search. `users --match joan` now lists every Joan for the
+same reason. Recorded under D8 in the architecture doc; the README, the skill, and the
+help for `resolve`, `conversation`, and `thread` say "use `@handle` to pick one person".
+
+The test this reverses was `test_the_at_prefix_is_optional`, which asserted that `joan`
+and `@joan` resolve identically; it is replaced by one asserting the opposite. Every
+other resolver test already named people by `@handle` and is unchanged.
 
 ### Slackline v0.2.0: public release prep
 

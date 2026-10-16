@@ -43,7 +43,9 @@ Read messages from a conversation.
 
 Selectors (use exactly one kind):
   --channel NAME_OR_ID     Repeatable
-  --with PERSON            Repeatable. Group DMs match on member set, not name
+  --with PERSON            Repeatable. Group DMs match on member set, not name.
+                           PERSON is @handle for exactly that person; a bare
+                           name searches names and fails if two people match
   --conversation ID        Repeatable
 
 Selectors are repeatable. Several conversations are read in one invocation,

@@ -91,6 +91,15 @@ def test_an_ambiguous_person_is_a_hard_failure_listing_candidates(resolver):
     assert "U004" in report and "U007" in report
 
 
+def test_a_bare_name_two_people_share_is_ambiguous_even_if_one_holds_it_as_a_handle(resolver):
+    with pytest.raises(errors.AmbiguousSelector) as caught:
+        resolver.resolve(with_users=["joan"])
+    report = caught.value.report()
+    assert "U002" in report and "U003" in report
+    # The way out is named, so an agent can retry without guessing.
+    assert "@handle" in report
+
+
 def test_an_unknown_person_is_not_found(resolver):
     with pytest.raises(errors.NotFound):
         resolver.resolve(with_users=["@nobody"])
