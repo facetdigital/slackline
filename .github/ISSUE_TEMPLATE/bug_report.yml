@@ -13,7 +13,7 @@ body:
     attributes:
       label: Version
       description: Output of `slackline-read --version`.
-      placeholder: slackline-read 0.2.0
+      placeholder: slackline-read 0.2.1
     validations:
       required: true
   - type: textarea

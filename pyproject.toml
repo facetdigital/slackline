@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "slackline"
-version = "0.2.0"
+version = "0.2.1"
 description = "Read-first Slack CLI tools for humans and AI agents. User-token only, capability-split binaries."
 readme = "README.md"
 requires-python = ">=3.9"

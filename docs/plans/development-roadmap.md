@@ -163,6 +163,18 @@ replaced with stand-ins of the same shape. The owner's own handle is replaced to
 
 ## Completed
 
+### Slackline v0.2.1: fixes from the manual test pass
+
+**Status:** Complete, 2026-10-16. Tagged `v0.2.1`; the wheel, the source tarball, and
+the skill zip are attached to the release. Branch `release/v0.2.1`.
+
+Batches the code changes made since v0.2.0, all found while the owner walked through
+the release as a newcomer would: archived conversations are marked `(archived)` in the
+text channel list, and a bare name in `--with` is a name search rather than a handle
+(below). Docs from the same pass ride along: a run-without-installing command that
+works, an upgrade command that rebuilds (`--force --reinstall`), and installing the
+skill from a release zip.
+
 ### A bare name is a name, not a handle
 
 **Status:** Complete, 2026-10-16. Branch `feat/bare-name-selectors`.
