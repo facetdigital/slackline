@@ -30,6 +30,28 @@ These apply to every phase. They are not a cleanup phase at the end.
 
 ## Next Immediate Step
 
+### Go public
+
+**Status:** In progress, 2026-10-19. v0.2.1 is released and passed the owner's manual
+test pass; the repository is still private. The flip is the owner's call alone.
+
+- [ ] A colleague reads the README as a newcomer, doing only the quick start, and reports
+  where they skimmed, got lost, or gave up. Requested 2026-10-19.
+- [ ] Trim the README from those notes, one PR. The README is long; the likely cuts are
+  the credential-chain and headless-run detail, moved to their own doc, with the quick
+  start kept at the top.
+- [ ] The owner flips `facetdigital/slackline` to public.
+- [ ] Two settings GitHub refuses on a private repository, run right after the flip:
+  ```bash
+  gh api -X PUT repos/facetdigital/slackline/actions/permissions/fork-pr-contributor-approval \
+    -f approval_policy=all_external_contributors
+  gh api -X PUT repos/facetdigital/slackline/private-vulnerability-reporting
+  ```
+- [ ] From a signed-out browser: the release badge shows the latest version (it reads
+  "no releases" while private) and the quick start's wheel URL downloads.
+
+Once public, merges are the owner's: open the PR and leave the merge to them.
+
 ### Phase 2.0: Hardening and ergonomics
 
 **Status:** Ready to implement
@@ -47,6 +69,9 @@ completions and CI.
 - Shell completions.
 - CI: shipped early in v0.1.2 (`.github/workflows/tests.yml`); Step 11 of this phase's
   plan only verifies the checks appear and pass on this phase's own PRs.
+- Slack Connect DM partners cost one `users.info` each on a cold cache: about 112
+  lookups on the first read in the live workspace, 2026-10-01. Correct, and cached for
+  24h afterwards, but worth batching or deferring. Not blocking.
 - Follow-ups recorded by the gate-fix review passes, none blocking: a `page_record()`
   helper in `transcript.py` so `conversation` and `thread` stop building the record by
   hand; a page ceiling for `collect` under `--all-pages` with a budget, where a server

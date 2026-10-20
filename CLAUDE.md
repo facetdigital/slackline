@@ -103,6 +103,13 @@ false pass.
 Fixtures must not contain real message content or real colleague names. Everything in
 `tests/fixtures/` is synthetic and stays that way.
 
+A manual test step handed to a person must have been run once, against real state, by
+whoever wrote it. Two steps in the v0.2.0 manual test plan failed for the plan's own
+reasons: a "no token" check found one anyway, because the Keychain item an earlier step
+added still answered the credential chain; and `grep -c` was used to count records in a
+cache file that is one line of JSON. A "nothing to fall back on" test must remove every
+source in `auth.SOURCE_ORDER`, not just the environment variable.
+
 ## Layout
 
 | File | Holds |
