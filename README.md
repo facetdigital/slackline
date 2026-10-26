@@ -33,8 +33,8 @@ About five minutes. You need Python 3.9 or newer, and a Slack workspace where yo
 **1. Install.** From the latest release, no clone needed:
 
 ```bash
-uv tool install https://github.com/facetdigital/slackline/releases/download/v0.2.1/slackline-0.2.1-py3-none-any.whl
-# or: pipx install https://github.com/facetdigital/slackline/releases/download/v0.2.1/slackline-0.2.1-py3-none-any.whl
+uv tool install https://github.com/facetdigital/slackline/releases/download/v0.2.2/slackline-0.2.2-py3-none-any.whl
+# or: pipx install https://github.com/facetdigital/slackline/releases/download/v0.2.2/slackline-0.2.2-py3-none-any.whl
 ```
 
 Or from a clone, if you want the source and the [skill](#the-slackline-skill) (pick this one if you plan to use it with Claude Code):
@@ -145,7 +145,7 @@ tarball, and the skill as a zip.
 
 ```bash
 # From a release, on your PATH, isolated
-uv tool install https://github.com/facetdigital/slackline/releases/download/v0.2.1/slackline-0.2.1-py3-none-any.whl
+uv tool install https://github.com/facetdigital/slackline/releases/download/v0.2.2/slackline-0.2.2-py3-none-any.whl
 
 # From a clone
 uv tool install .
