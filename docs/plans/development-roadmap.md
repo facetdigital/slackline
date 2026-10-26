@@ -30,30 +30,9 @@ These apply to every phase. They are not a cleanup phase at the end.
 
 ## Next Immediate Step
 
-### Go public
-
-**Status:** In progress, 2026-10-19. v0.2.1 passed the owner's manual test pass, and v0.2.2 (2026-10-25) re-released it with the README trim and the skill fix so the first public release matches the docs; the repository is still private. The flip is the owner's call alone.
-
-- [x] A colleague reads the README as a newcomer, doing only the quick start, and reports
-  where they skimmed, got lost, or gave up. Requested 2026-10-19.
-  Done 2026-10-20: the install worked end to end, from a clone, including asking Claude about a DM. The notes were about the quick start's Slack app steps, which no longer matched Slack's screens, a missing expected `whoami` output, 1Password reading as the only way to hand an agent the token, and no uninstall steps. The reviewer is a workspace admin, so the run could not show whether a non-admin is blocked at install.
-- [x] Trim the README from those notes, one PR. The quick start now walks Slack's current app-creation screens step by step and shows the expected `whoami` output; the credential chain moved to `docs/credentials.md`, and output, exit codes, the audit log, and the directory cache to `docs/reference.md`; Using with Claude Code leads with the quick start's own `read -rs` token, with 1Password as one option; an Uninstall section was added.
-- [x] A non-admin tries step 2 in other workspaces. Done 2026-10-25: DevSelect let the owner install; Tech DNA refused with "You don't have permission to install apps in Tech DNA. You can still create your app and request to install when you're ready." Whether a non-admin can install depends on the workspace's app settings. The quick start says an admin may need to approve, and step 2 quotes that refusal and says to request the install.
-- [ ] The owner flips `facetdigital/slackline` to public.
-- [ ] Two settings GitHub refuses on a private repository, run right after the flip:
-  ```bash
-  gh api -X PUT repos/facetdigital/slackline/actions/permissions/fork-pr-contributor-approval \
-    -f approval_policy=all_external_contributors
-  gh api -X PUT repos/facetdigital/slackline/private-vulnerability-reporting
-  ```
-- [ ] From a signed-out browser: the release badge shows the latest version (it reads
-  "no releases" while private) and the quick start's wheel URL downloads.
-
-Once public, merges are the owner's: open the PR and leave the merge to them.
-
 ### Read attachments, especially images
 
-**Status:** Very soon, by the owner's call on 2026-10-22: "put that into its roadmap for VERY SOON - reading attachments, especially images. We can figure out what that means for OCR and such later." Next after Go public, ahead of Phase 2.0. Needs a plan (`/gameplan`) before code.
+**Status:** Very soon, by the owner's call on 2026-10-22: "put that into its roadmap for VERY SOON - reading attachments, especially images. We can figure out what that means for OCR and such later." Next, now that Go public is done, ahead of Phase 2.0. Needs a plan (`/gameplan`) before code.
 
 The token has no `files:read` scope, so a file shared in a DM or channel cannot be fetched: `url_private_download` answers with Slack's HTML login page. The trigger was two DM screenshots on 2026-10-21 (a `.png` and an iOS `.jpg`) that had to be ingested and could not be. Today a file shows up only as a line like `[file: image.png (PNG, 261.0KB)]` in text output, the `jsonl` format drops the `files` array entirely, and only `--format raw` carries the download URL. An earlier motivating case is the same shape: a contractor's monthly time-log CSV, saved by hand every month before it can be reconciled.
 
@@ -183,6 +162,25 @@ replaced with stand-ins of the same shape. The owner's own handle is replaced to
 ---
 
 ## Completed
+
+### Go public
+
+**Status:** Complete, 2026-10-25. `facetdigital/slackline` is public. v0.2.1 passed the owner's manual test pass, and v0.2.2 re-released it with the README trim and the skill fix just before the flip, so the first public release matches the docs. A scan of the full git history before the flip found only synthetic test tokens.
+
+- [x] A colleague reads the README as a newcomer, doing only the quick start, and reports
+  where they skimmed, got lost, or gave up. Requested 2026-10-19.
+  Done 2026-10-20: the install worked end to end, from a clone, including asking Claude about a DM. The notes were about the quick start's Slack app steps, which no longer matched Slack's screens, a missing expected `whoami` output, 1Password reading as the only way to hand an agent the token, and no uninstall steps. The reviewer is a workspace admin, so the run could not show whether a non-admin is blocked at install.
+- [x] Trim the README from those notes, one PR. The quick start now walks Slack's current app-creation screens step by step and shows the expected `whoami` output; the credential chain moved to `docs/credentials.md`, and output, exit codes, the audit log, and the directory cache to `docs/reference.md`; Using with Claude Code leads with the quick start's own `read -rs` token, with 1Password as one option; an Uninstall section was added.
+- [x] A non-admin tries step 2 in other workspaces. Done 2026-10-25: DevSelect let the owner install; Tech DNA refused with "You don't have permission to install apps in Tech DNA. You can still create your app and request to install when you're ready." Whether a non-admin can install depends on the workspace's app settings. The quick start says an admin may need to approve, and step 2 quotes that refusal and says to request the install.
+- [x] The owner flips `facetdigital/slackline` to public. Done 2026-10-25 with `gh repo edit --visibility public`, at the owner's request.
+- [x] Two settings GitHub refuses on a private repository, run right after the flip. Done 2026-10-25 and read back: fork PR approval is `all_external_contributors`, private vulnerability reporting is enabled. The fork setting took only with a JSON body; the same call with `-f approval_policy=...` returned 204 and left the old value.
+  ```bash
+  echo '{"approval_policy":"all_external_contributors"}' | gh api -X PUT \
+    repos/facetdigital/slackline/actions/permissions/fork-pr-contributor-approval --input -
+  gh api -X PUT repos/facetdigital/slackline/private-vulnerability-reporting
+  ```
+- [x] From a signed-out browser: the release badge shows the latest version (it reads
+  "no releases" while private) and the quick start's wheel URL downloads. Done 2026-10-25 by the owner; the downloaded wheel's SHA-256 matches the v0.2.2 release asset.
 
 ### Slackline v0.2.2: the docs a newcomer reads
 
