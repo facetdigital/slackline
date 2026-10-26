@@ -26,11 +26,14 @@ The tool prefers `SLACK_USER_TOKEN` from the environment, which is the only sour
 agent should rely on; the person who launched this session is responsible for putting
 it there. Do not hunt for credentials: never run `op`, never touch a keychain, never
 read `.env` files. If `whoami` exits 3 with no token found, STOP and tell the user to
-relaunch with the token in the environment. Quote them this shape; it is for the user
-to run at launch, not for you to run:
+relaunch with the token in the environment. Any way of setting the variable works; 1Password is one option, not a requirement. Quote them these shapes; they are for the user to run at launch, not for you to run:
 
 ```bash
-# for the user's own shell, not for the agent:
+# for the user's own shell, not for the agent. Paste the token; nothing echoes:
+read -rs SLACK_USER_TOKEN && export SLACK_USER_TOKEN
+claude
+
+# or, if they keep it in 1Password, with their own account and item:
 SLACK_USER_TOKEN=$(op read --account your.1password.com \
   "op://Vault/Slack User API Token/credential") claude
 ```
