@@ -28,8 +28,7 @@ entry in the [roadmap](docs/plans/development-roadmap.md)). See
 
 ## Quick start
 
-About five minutes. You need Python 3.9 or newer, and a Slack workspace where you can
-install an app (or ask an admin to approve one).
+About five minutes. You need Python 3.9 or newer, and a Slack workspace where you can install an app. If your workspace restricts app installs, you may need an admin to approve it.
 
 **1. Install.** From the latest release, no clone needed:
 
@@ -38,39 +37,66 @@ uv tool install https://github.com/facetdigital/slackline/releases/download/v0.2
 # or: pipx install https://github.com/facetdigital/slackline/releases/download/v0.2.1/slackline-0.2.1-py3-none-any.whl
 ```
 
-Or from a clone, if you want the source and the [skill](#the-slackline-skill):
+Or from a clone, if you want the source and the [skill](#the-slackline-skill) (pick this one if you plan to use it with Claude Code):
 
 ```bash
 git clone https://github.com/facetdigital/slackline.git
 cd slackline && uv tool install .
 ```
 
-**2. Create a Slack app and get a user token.** At
-[api.slack.com/apps](https://api.slack.com/apps), choose **Create New App**, then **From a
-manifest**, pick your workspace, and paste
-[`docs/slack-app-manifest.yml`](docs/slack-app-manifest.yml). It asks for read scopes on a
-user token and nothing else: no bot, no write scope. Choose **Install to Workspace**,
-then copy the **User OAuth Token** (`xoxp-...`) from **OAuth & Permissions**.
+**2. Create the Slack app and copy your user token.** Sign in to your Slack workspace in the browser first, then go to [api.slack.com/apps](https://api.slack.com/apps) and choose **Create New App**, then **From a manifest**.
 
-**3. Hand it the token, and check who you are.** `read -rs` takes the token without
-echoing it or writing it to your shell history:
+1. Pick your workspace from the dropdown, choose the **YAML** tab, and replace its contents with [`docs/slack-app-manifest.yml`](docs/slack-app-manifest.yml). It asks for read scopes on a user token and nothing else: no bot, no write scope. Click **Next**.
+2. Click **Create and Install**. In the window that opens, check the workspace is the right one and click **Allow**.
+3. A window titled **Slackline is ready!** opens. Expand **Your app credentials** at the top. It lists a **User token** and an **App Token**; copy the **User token** (it starts `xoxp-`). Leave the window open until step 3 is done.
+
+If your workspace only lets admins install apps, Slack tells you "You don't have permission to install apps" and offers to let you create the app and request the install. Do that; once an admin approves it, come back to the app at [api.slack.com/apps](https://api.slack.com/apps) to install it and copy the user token.
+
+**3. Hand the token to your shell.** Run this, paste the token, and press Return:
 
 ```bash
 read -rs SLACK_USER_TOKEN && export SLACK_USER_TOKEN
+```
+
+It shows no prompt and echoes nothing, which keeps the token off your screen and out of your shell history. Now close the Slack window with the **X** in its top right corner.
+
+**4. Check who you are,** in the same terminal:
+
+```bash
 slackline-read whoami
 ```
 
-**4. Read something.**
+You should see your user, your workspace, and the scopes the token holds:
+
+```
+User:      you (U0123ABCDE)
+Workspace: Your Workspace (T0123ABCDE)
+URL:       https://your-workspace.slack.com/
+
+Granted scopes:
+  channels:history
+  channels:read
+  groups:history
+  groups:read
+  identify
+  im:history
+  im:read
+  mpim:history
+  mpim:read
+  users:read
+  users:read.email
+
+This token holds no write scopes. slackline-read is read-only.
+```
+
+**5. Read something.** Use a channel that exists in your workspace; swap it in for `general` if yours has none by that name.
 
 ```bash
 slackline-read channels --match general
 slackline-read conversation --channel '#general' --since 24h
 ```
 
-Next: [Credentials](#credentials) to keep the token somewhere better than a shell
-variable, [Commands](#commands) for everything else, and
-[Using with Claude Code](#using-with-claude-code) to hand it to an agent, including the
-[skill](#the-slackline-skill) that teaches agents to use it.
+Next: [Using with Claude Code](#using-with-claude-code) to hand it to an agent, including the [skill](#the-slackline-skill) that teaches agents to use it; [Commands](#commands) for everything else; and [Credentials](docs/credentials.md) to keep the token somewhere better than a shell variable.
 
 ---
 
@@ -139,51 +165,31 @@ Confirm it landed:
 slackline-read --version
 ```
 
+### Uninstall
+
+Remove the binary, and the skill if you copied it anywhere:
+
+```bash
+uv tool uninstall slackline          # or: pipx uninstall slackline
+rm -rf ~/.claude/skills/slackline    # only if you installed the skill there
+```
+
+Remove what Slackline keeps on disk, the [directory cache and audit log](docs/reference.md), and the Keychain item if you made one:
+
+```bash
+rm -rf ~/.cache/slackline ~/.local/state/slackline
+security delete-generic-password -s slackline   # macOS, only if you stored the token there
+```
+
+Then delete the Slack app, which revokes its token: at [api.slack.com/apps](https://api.slack.com/apps), open **Slackline**, and on **Basic Information** choose **Delete App** at the bottom of the page.
+
 ---
 
 ## Credentials
 
-Slackline uses a **user token** (`xoxp-...`), not a bot token. It reads exactly what you
-can read, and nothing you cannot.
+Slackline uses a **user token** (`xoxp-...`), not a bot token, so it reads exactly what you can read. It looks for the token in the `SLACK_USER_TOKEN` environment variable first, then the macOS Keychain, then 1Password if you configure it, then `./.env`. There is deliberately no `--token` flag, because `argv` is visible to every process via `ps` and lands in shell history.
 
-There is deliberately **no `--token` flag**. A token in `argv` is readable by any process
-via `ps` and is written to your shell history.
-
-Resolution order, first hit wins:
-
-| # | Source | For |
-|---|--------|-----|
-| 1 | `SLACK_USER_TOKEN` environment variable | **Agents.** The only one an agent needs |
-| 2 | macOS Keychain, service `slackline` | Humans on a Mac |
-| 3 | 1Password, when `SLACKLINE_OP_REF` is set | Humans who want TouchID gating |
-| 4 | `./.env` in the current directory | Local development |
-
-`--token-file PATH` (CI, containers) sits outside that chain: when given, it is consulted
-first, ahead of the environment, because an explicit instruction overrides the ambient
-credential. A missing file is an error even when `SLACK_USER_TOKEN` is set.
-
-### For an agent
-
-```bash
-SLACK_USER_TOKEN=$(op read --account your.1password.com \
-  "op://Vault/Slack User API Token/credential") \
-  slackline-read conversation --with @joan --since 24h
-```
-
-The runner resolves the secret once and passes it in. The agent never fetches a
-credential, so it never triggers a TouchID prompt and never has a way to obtain a token on
-its own.
-
-Pass `--token-source env` in unattended jobs. It pins the source and disables the
-fallback chain, so a missing credential fails loudly instead of blocking on an interactive
-1Password prompt that nobody is there to answer.
-
-### For a human
-
-```bash
-security add-generic-password -s slackline -a "$USER" -w   # prompts for the token
-slackline-read whoami
-```
+An agent needs only `SLACK_USER_TOKEN` in its environment, set any way you like. The `read -rs` from the quick start is enough; 1Password is one option, not a requirement. The full chain, `--token-file`, unattended runs, and the Keychain setup are in [docs/credentials.md](docs/credentials.md).
 
 ---
 
@@ -298,51 +304,13 @@ continue an incomplete read.
 
 ## Reading the output
 
-Two rules make the output safe for a model to act on.
-
-**Nothing is silently dropped.** Blocks, attachments, files, and unknown block types all
-render. A message with no renderable content at all is reported as such rather than
-skipped. If Slack ships a block type this code has never seen, you get a labelled
-placeholder, not silence.
-
-**A subset always says so.** Every read ends with a `page` record:
+Two rules make the output safe for a model to act on. **Nothing is silently dropped**: blocks, attachments, files, and unknown block types all render, and a message that cannot be rendered is reported rather than skipped. **A subset always says so**: every read ends with a `page` record such as
 
 ```
 -- 47 messages; 3 filtered out; more available, pass --all-pages or use the cursor
 ```
 
-A read that hits its ceiling **exits 0** and reports the truncation there. It succeeded;
-it just did not finish. Exiting non-zero would make every long conversation look like an
-error to `set -e` and to most agent harnesses. The cursor in that record is exact for
-top-level history: each request asks Slack for the remaining budget, so the ceiling lands
-on a page boundary and `--cursor` resumes at the first message you have not seen, with
-nothing skipped and nothing repeated. A cursor belongs to one conversation and cannot be
-combined with several selectors.
-
-Under `--threads full`, a thread with more replies than one page is counted in the same
-record (`1 thread not fully expanded, pass --all-pages`) rather than silently shortened,
-and `--all-pages` removes that per-thread bound entirely. One qualification: a broadcast
-reply whose root falls on the far side of a page boundary appears once from history and
-again under its root on the next page. It is never dropped, which is the failure that
-would matter.
-
----
-
-## Exit codes
-
-| Code | Meaning |
-|------|---------|
-| 0 | Success, **including a truncated or paginated read** |
-| 1 | Slack API or unexpected failure |
-| 2 | Invalid arguments |
-| 3 | Authentication failure or missing scope |
-| 4 | Ambiguous selector: candidates are printed, pick one by ID |
-| 5 | Not found, or not visible to this user |
-| 7 | Refused by the read-only method allowlist |
-| 130 | Interrupted (Ctrl-C), by shell convention |
-
-6 is deliberately unassigned. It was proposed for "partial results", and leaving it
-unclaimed keeps that meaning from creeping back in against D16.
+and a read that hits its ceiling still **exits 0**, because it succeeded; it just did not finish. Exit 4 means an ambiguous selector, with the candidates printed. Cursors, thread bounds, the full exit-code table, and what Slackline keeps on disk (an audit log and a directory cache, never message content) are in [docs/reference.md](docs/reference.md).
 
 ---
 
@@ -369,28 +337,21 @@ two conversations match, you get exit 4 and the candidates rather than a guess.
 
 ## Using with Claude Code
 
-Slackline's whole design is that an agent needs nothing but the executable and one
-environment variable. On a fresh machine:
+Slackline's whole design is that an agent needs nothing but the executable and one environment variable, `SLACK_USER_TOKEN`. If you did the quick start from a clone, you have both. Start Claude Code inside the clone, from the same terminal where you exported the token, so it inherits the variable and picks up the [skill](#the-slackline-skill):
 
 ```bash
-git clone git@github.com:facetdigital/slackline.git
 cd slackline
-uv tool install .          # or: pipx install .
-slackline-read --version   # confirm it is on PATH
+claude
 ```
 
-Launch Claude Code with the token in its environment. The runner resolves the secret and
-passes it in; Claude's shell commands inherit it, nothing is written to disk, and TouchID
-prompts once at launch:
+Nothing is written to disk; the token lives in that shell's environment and goes away with it. To start Claude from a fresh terminal later, put the token back in the environment first, by repeating the quick start's `read -rs`, or by resolving it at launch from wherever you keep it. With 1Password, for example, replacing the account and the `op://` reference with your own:
 
 ```bash
-SLACK_USER_TOKEN=$(op read --account your.1password.com   "op://Vault/Slack User API Token/credential") claude
+SLACK_USER_TOKEN=$(op read --account your.1password.com \
+  "op://Vault/Slack User API Token/credential") claude
 ```
 
-Then allow the executable once, so reads do not prompt every time: run `/permissions`
-inside Claude Code and add the rule `Bash(slackline-read:*)` to the project's
-`.claude/settings.local.json`. That rule is the permission boundary working as designed:
-the agent gets the read-only binary and nothing else.
+Depending on your permission settings, Claude Code may ask before it runs `slackline-read`. To allow it once rather than on every read, run `/permissions` inside Claude Code and add the rule `Bash(slackline-read:*)` to the project's `.claude/settings.local.json`. That rule is the permission boundary working as designed: the agent gets the read-only binary and nothing else.
 
 First prompts to try:
 
@@ -443,42 +404,6 @@ issue on this repo. The bar for "worth it" is low. Before asking for a new comma
 [what this is not](#what-this-is-not). Pull requests are welcome; start with
 [CONTRIBUTING.md](CONTRIBUTING.md). Security problems go through
 [SECURITY.md](SECURITY.md), not an issue.
-
----
-
-## The audit log
-
-Every invocation appends one line to `~/.local/state/slackline/audit.jsonl`: timestamp,
-command, argv with any token-shaped string redacted, the conversation IDs read, the
-window, the message count, the duration, and the exit code.
-
-**Never message content.** A log that carried it would be a second, unmanaged copy of the
-workspace living in a dotfile, which is a worse liability than the one the log exists to
-address.
-
-Move it with `SLACKLINE_AUDIT_LOG=/some/path`, switch it off with
-`SLACKLINE_AUDIT_LOG=none`. Failing to write it is a warning, never a failure of the read.
-The file is owner-only, and so is the directory Slackline creates for it; a directory you
-point it at is left as it is. The path may not be a symlink (it is refused with a
-warning), and it belongs in a directory only you can write.
-
----
-
-## The directory cache
-
-Resolving `@joan` needs the user directory, and building it means paginating the whole
-workspace, so the directory is cached on disk: `users-<team>.json` (24h),
-`conversations-<team>.json` (1h), `members-<team>.json` (24h, group DM membership,
-which Slack never changes), and `external-users-<team>.json` (24h, see below) under
-`$SLACKLINE_CACHE_DIR`, else `$XDG_CACHE_HOME/slackline`, else `~/.cache/slackline`. It holds names, IDs, handles, display names, email addresses,
-archived flags, and group DM membership. **Never message content.** The directory is
-owner-only. `--refresh-cache` rebuilds it.
-
-People from another company in a shared channel (Slack Connect) are not in your
-workspace's directory. Slackline names them from the profile Slack attaches to their
-messages, else with one `users.info` lookup per person, and marks them:
-`@Jane Doe (ext)`, as a speaker and in mentions. JSONL carries `"external": true` and
-their `team`. Someone it cannot name at all renders as their ID; the read still succeeds.
 
 ---
 

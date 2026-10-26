@@ -1,8 +1,9 @@
 # Slack app manifest for slackline-read.
 #
 # Create the app at https://api.slack.com/apps: Create New App, From a manifest, pick
-# your workspace, paste this file. Then Install to Workspace and copy the User OAuth
-# Token (xoxp-...) from OAuth & Permissions.
+# your workspace, choose the YAML tab, and paste this file. Then Create and Install,
+# Allow, and copy the User token (xoxp-...) from "Your app credentials". The README
+# quick start walks through each screen.
 #
 # User-token scopes only: Slackline acts as you and reads exactly what you can read.
 # There is no bot user and no write scope of any kind. users:read.email is optional; it

@@ -35,11 +35,11 @@ These apply to every phase. They are not a cleanup phase at the end.
 **Status:** In progress, 2026-10-19. v0.2.1 is released and passed the owner's manual
 test pass; the repository is still private. The flip is the owner's call alone.
 
-- [ ] A colleague reads the README as a newcomer, doing only the quick start, and reports
+- [x] A colleague reads the README as a newcomer, doing only the quick start, and reports
   where they skimmed, got lost, or gave up. Requested 2026-10-19.
-- [ ] Trim the README from those notes, one PR. The README is long; the likely cuts are
-  the credential-chain and headless-run detail, moved to their own doc, with the quick
-  start kept at the top.
+  Done 2026-10-20: the install worked end to end, from a clone, including asking Claude about a DM. The notes were about the quick start's Slack app steps, which no longer matched Slack's screens, a missing expected `whoami` output, 1Password reading as the only way to hand an agent the token, and no uninstall steps. The reviewer is a workspace admin, so the run could not show whether a non-admin is blocked at install.
+- [x] Trim the README from those notes, one PR. The quick start now walks Slack's current app-creation screens step by step and shows the expected `whoami` output; the credential chain moved to `docs/credentials.md`, and output, exit codes, the audit log, and the directory cache to `docs/reference.md`; Using with Claude Code leads with the quick start's own `read -rs` token, with 1Password as one option; an Uninstall section was added.
+- [x] A non-admin tries step 2 in other workspaces. Done 2026-10-25: DevSelect let the owner install; Tech DNA refused with "You don't have permission to install apps in Tech DNA. You can still create your app and request to install when you're ready." Whether a non-admin can install depends on the workspace's app settings. The quick start says an admin may need to approve, and step 2 quotes that refusal and says to request the install.
 - [ ] The owner flips `facetdigital/slackline` to public.
 - [ ] Two settings GitHub refuses on a private repository, run right after the flip:
   ```bash
@@ -107,7 +107,7 @@ Seeds from the Read-Only MVP gate (third run), all low or nit:
   items PR #14 closed; note reply expansion is bounded per thread; keep the bidi item.
 - `transcript.py`: the `Collected.truncated_by` comment should include `"max-pages"`.
 - Replace the `3 * constant` loop guards in the command and api tests with a fixed literal.
-- README "Reading the output": one sentence on the `max-pages` stop and its stderr line.
+- `docs/reference.md` "Reading the output": one sentence on the `max-pages` stop and its stderr line.
 - Extend the help-text test to require `parse` and the three-argument `run`.
 
 ---

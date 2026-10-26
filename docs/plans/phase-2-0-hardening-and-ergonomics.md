@@ -57,7 +57,7 @@ Phase 2.1 (search) stays out: it needs the `search:read` scope and is built only
   cached as complete (D5, D7, Seed-1, Seed-2)
 - Test guards use fixed literals; the help-text test pins the full command protocol
   (Seed-5, Seed-7)
-- Docs corrected: `Collected.truncated_by` comment, README `max-pages` sentence, roadmap
+- Docs corrected: `Collected.truncated_by` comment, `docs/reference.md` `max-pages` sentence, roadmap
   follow-ups bullet (Seed-3, Seed-4, Seed-6)
 - `--include-permalinks` on `conversation` and `thread`; the `permalink` key is always
   present in message records, null unless requested (D13, D23-new, P7)
@@ -187,7 +187,7 @@ the whole workspace, and every later invocation inside the TTL would trust it si
 - [ ] Test-first: n/a, documentation. Verification is the grep below.
 - [ ] `src/slackline/transcript.py:127`: the `Collected.truncated_by` field comment
   becomes `# "max-messages", "max-pages", or None`.
-- [ ] `README.md`, "Reading the output": after the truncation paragraph, one sentence:
+- [ ] `docs/reference.md`, "Reading the output": after the truncation paragraph, one sentence:
   a fetch also stops after 100 pages (`truncated_by: "max-pages"`), announced on
   stderr, with the cursor still usable.
 - [ ] `docs/plans/development-roadmap.md`, the "Follow-ups recorded by the gate-fix
@@ -195,13 +195,13 @@ the whole workspace, and every later invocation inside the TTL would trust it si
   items (closed by PR #14); add "reply expansion is bounded per thread by the same page
   ceiling"; keep the bidi-override item.
 - [ ] Verify: `grep -n '"max-messages", or None' src/slackline/transcript.py` returns
-  nothing; `grep -c "max-pages" README.md` is at least 1;
+  nothing; `grep -c "max-pages" docs/reference.md` is at least 1;
   `grep -n "page_record()" docs/plans/development-roadmap.md` returns nothing;
   suite green.
 
 **Satisfies:** D15, D16; roadmap "Docs move with the code"; Seed-3, Seed-4, Seed-6
 
-**File(s):** `src/slackline/transcript.py`, `README.md`, `docs/plans/development-roadmap.md`
+**File(s):** `src/slackline/transcript.py`, `docs/reference.md`, `docs/plans/development-roadmap.md`
 
 **Test:**
 ```bash
@@ -320,12 +320,12 @@ Branch: `feat/policy`
 - [ ] Implement `PolicyRefused(SlacklineError)` with `exit_code = 8` in `errors.py`
   (docstring: a local configuration refused the read; distinct from 5, where Slack
   said no, and from 7, where the binary itself cannot). Add `    8  refused by the
-  --policy file` to `EXIT_CODES`, the D18 table, and the README table.
+  --policy file` to `EXIT_CODES`, the D18 table, and the exit-code table in `docs/reference.md`.
 - [ ] Verify green.
 
 **Satisfies:** D18, P12; roadmap Phase 2.0 policy bullet
 
-**File(s):** `src/slackline/errors.py`, `src/slackline/cli_read.py`, `docs/architecture/architecture.md`, `README.md`, `tests/test_errors.py`
+**File(s):** `src/slackline/errors.py`, `src/slackline/cli_read.py`, `docs/architecture/architecture.md`, `docs/reference.md`, `tests/test_errors.py`
 
 **Test:**
 ```bash
@@ -573,6 +573,7 @@ grep -c . .github/workflows/tests.yml
 | `.github/workflows/tests.yml` | 11 |
 | `.env.example` | 9 |
 | `CLAUDE.md` | 9 |
-| `README.md` | 4, 6, 7, 9, 10, 11 |
+| `README.md` | 6, 9, 10, 11 |
+| `docs/reference.md` | 4, 7 |
 | `docs/architecture/architecture.md` | 5, 7, 8 |
 | `docs/plans/development-roadmap.md` | 4, 11, 12 |
