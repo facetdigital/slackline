@@ -52,6 +52,23 @@ test pass; the repository is still private. The flip is the owner's call alone.
 
 Once public, merges are the owner's: open the PR and leave the merge to them.
 
+### Read attachments, especially images
+
+**Status:** Very soon, by the owner's call on 2026-10-22: "put that into its roadmap for VERY SOON - reading attachments, especially images. We can figure out what that means for OCR and such later." Next after Go public, ahead of Phase 2.0. Needs a plan (`/gameplan`) before code.
+
+The token has no `files:read` scope, so a file shared in a DM or channel cannot be fetched: `url_private_download` answers with Slack's HTML login page. The trigger was two DM screenshots on 2026-10-21 (a `.png` and an iOS `.jpg`) that had to be ingested and could not be. Today a file shows up only as a line like `[file: image.png (PNG, 261.0KB)]` in text output, the `jsonl` format drops the `files` array entirely, and only `--format raw` carries the download URL. An earlier motivating case is the same shape: a contractor's monthly time-log CSV, saved by hand every month before it can be reconciled.
+
+What it has to do:
+- Download files attached to messages, images first, to a caller-named directory, and report each saved path with its mime type, size, and the message it came from. Likely shape: a read-only `slackline-read file <id or permalink> --out <dir>` command, or a flag on `conversation` and `thread` that saves a transcript's attachments as it reads. Settle which in planning; both may be wanted.
+- Put file metadata back into the `jsonl` records (ID, name, mime type, size), so a model can see that a message carries a file and which ID to fetch. Nothing silently dropped (invariant 4).
+- Stay read-only by construction: the only API change is an addition to the D3 allowlist, the credential comes through the existing chain (D4a, D4b) with no token in argv, and every fetch writes an audit log line that records what was fetched (ID, name, size), never its content (invariant 9).
+
+Owner action first: add `files:read` to the Slack app and reinstall it. Only the app's owner can. Until then `whoami` will not list the scope and every download fails.
+
+Design questions to settle in planning: a size ceiling; a refusal for files Slack does not host itself (external and Google Drive links); filename collisions and path safety in the output directory; and what the text renderer prints for a file share (D9) so a model can tell it is fetchable, and with what ID.
+
+Deferred, by the owner: OCR and any text extraction from images or documents. This feature saves the bytes and reports where they are; what reads them comes later.
+
 ### Phase 2.0: Hardening and ergonomics
 
 **Status:** Ready to implement
@@ -123,26 +140,6 @@ Design question to settle first: which read-only method can answer it in a few c
 `search.messages` with a date filter is the obvious candidate and would make this ride on
 Phase 2.1 and its `search:read` scope. Anything per-conversation keeps the N-calls cost
 this exists to remove. Whatever it is must stay on the D3 allowlist.
-
-### Phase 2.3: Read shared files (idea)
-
-**Status:** Not planned. Low priority, no date. Captured so it is not lost.
-
-The token has no `files:read` scope, so a skill cannot download a file someone shares in
-a DM or channel; a person has to save each one by hand and hand it over. The motivating
-case is a contractor who DMs a monthly time-log CSV that is reconciled against the
-time-tracking system before invoicing, and every month it stalls on that manual save.
-The general need is the same shape: timesheets, invoices, any shared file a skill has to
-read.
-
-Likely shape: add `files:read` (to the existing token, or a separate one) plus a small
-read-only fetch command, for example `slackline-read file <id or permalink> --out <path>`.
-Read-only by construction: the only API change is an addition to the D3 allowlist, the
-credential comes through the existing chain (D4a, D4b), and nothing new is written at
-rest. Design questions to settle first: a size ceiling; a refusal for files Slack does
-not host itself (external and Google Drive links); and what the transcript renderer
-prints for a file share (D9) so a model can tell that a file is fetchable, and with what
-ID.
 
 ### Phase 3.0: `slackline-write`
 
