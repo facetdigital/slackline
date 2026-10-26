@@ -50,6 +50,8 @@ cd slackline && uv tool install .
 2. Click **Create and Install**. In the window that opens, check the workspace is the right one and click **Allow**.
 3. A window titled **Slackline is ready!** opens. Expand **Your app credentials** at the top. It lists a **User token** and an **App Token**; copy the **User token** (it starts `xoxp-`). Leave the window open until step 3 is done.
 
+If your workspace only lets admins install apps, Slack tells you "You don't have permission to install apps" and offers to let you create the app and request the install. Do that; once an admin approves it, come back to the app at [api.slack.com/apps](https://api.slack.com/apps) to install it and copy the user token.
+
 **3. Hand the token to your shell.** Run this, paste the token, and press Return:
 
 ```bash
