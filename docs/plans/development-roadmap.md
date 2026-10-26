@@ -32,8 +32,7 @@ These apply to every phase. They are not a cleanup phase at the end.
 
 ### Go public
 
-**Status:** In progress, 2026-10-19. v0.2.1 is released and passed the owner's manual
-test pass; the repository is still private. The flip is the owner's call alone.
+**Status:** In progress, 2026-10-19. v0.2.1 passed the owner's manual test pass, and v0.2.2 (2026-10-25) re-released it with the README trim and the skill fix so the first public release matches the docs; the repository is still private. The flip is the owner's call alone.
 
 - [x] A colleague reads the README as a newcomer, doing only the quick start, and reports
   where they skimmed, got lost, or gave up. Requested 2026-10-19.
@@ -184,6 +183,12 @@ replaced with stand-ins of the same shape. The owner's own handle is replaced to
 ---
 
 ## Completed
+
+### Slackline v0.2.2: the docs a newcomer reads
+
+**Status:** Complete, 2026-10-25. Tagged `v0.2.2`; the wheel, the source tarball, and the skill zip are attached to the release. Branch `release/v0.2.2`.
+
+No code changes. Cut so the first public release carries the README trimmed from a colleague's cold read-through (PR #15) and the skill whose relaunch hint offers the plain `read -rs` path before 1Password. Without it, the release's skill zip and source tarball would have contradicted the README on main.
 
 ### Slackline v0.2.1: fixes from the manual test pass
 
