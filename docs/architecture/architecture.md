@@ -206,7 +206,7 @@ The obvious fix, `conversations.open --users U1,U2 --prevent_creation`, is banne
 because that method can create a conversation.
 
 **Revised 2026-08-27 after implementation.** Two further facts, both found only by running
-against the live workspace, changed this design after it was first written. They are
+against a real workspace, changed this design after it was first written. They are
 recorded here rather than quietly fixed, because each invalidated something the original
 plan asserted.
 
@@ -242,7 +242,7 @@ The resolver therefore:
 5. Exactly one match is success. Zero is exit 5. More than one is exit 4, with both
    conversation IDs and member lists printed so the caller can pick by ID.
 
-The fallback scan measured 8.9 seconds against the live workspace, which is far too slow to
+The fallback scan measured 8.9 seconds against a real workspace, which is far too slow to
 repeat in an agent loop. Member sets are therefore cached to disk (`members-<team>.json`,
 24h TTL, safe because Slack group DM membership is immutable). The same query drops to
 0.22 seconds on the second invocation.

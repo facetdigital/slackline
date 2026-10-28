@@ -140,7 +140,7 @@ to stay honest. See the architecture document, decision D4.
 
 ## 7. Why message rendering is the core of the product
 
-Reconnaissance against the target workspace on 2026-08-27 sampled roughly 376 messages
+Reconnaissance against a real workspace on 2026-08-27 sampled roughly 376 messages
 across 8 conversations. The results:
 
 | Property | Share of sampled messages |
@@ -171,7 +171,7 @@ correctly is the work.
 
 ## 8. Verified facts about the target environment
 
-Established empirically on 2026-08-27 against the author's workspace, not assumed.
+Established empirically on 2026-08-27 against a real workspace, not assumed.
 
 - **Rate limiting is not currently a constraint for this token.** Four consecutive
   `conversations.history` calls at `limit=100` completed in about 0.22s each with no

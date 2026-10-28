@@ -138,7 +138,7 @@ rebase. Docs move with the code in the same PR, including the plan's checkboxes.
 leave them stale; a plan file that does not track reality costs a later session an hour of
 re-derivation to answer "where are we".
 
-Merging is a judgment call, not a blanket rule either way. `main` is protected, so a merge goes through the owner's admin bypass (`gh pr merge --merge --admin`, with green checks). Merge when the owner asks, when a workflow they invoked merges as part of its contract (`/beastmode`, a `/yolo` wrap-up), or for minor upkeep such as roadmap checkboxes. Anything the owner has not clearly said is ready to go live, such as a feature, a behavior change, or a release, waits for their say-so. When unsure, open the PR and ask.
+Merging is a judgment call, not a blanket rule either way. `main` is protected, so a merge goes through the owner's admin bypass (`gh pr merge --merge --admin`, with green checks). Merge when the owner asks, when a workflow they started merges as part of its job, or for minor upkeep such as roadmap checkboxes. Anything the owner has not clearly said is ready to go live, such as a feature, a behavior change, or a release, waits for their say-so. When unsure, open the PR and ask.
 
 Commit messages explain **why**, not what the diff already shows. No AI attribution or
 co-author trailers.
