@@ -19,10 +19,7 @@ questions" and you have the thing this exists for. Slackline handles authenticat
 identity resolution, retrieval, pagination, and formatting. The model handles
 interpretation. Neither does the other's job.
 
-**Status: v0.2.** Every read command is built, tested offline, and was verified end to end
-against the live workspace on 2026-08-28 (the six PRD success criteria; see the Phase 1.0
-entry in the [roadmap](docs/plans/development-roadmap.md)). See
-[what is not built](#what-is-not-built-yet) before you plan around it.
+**Status: v0.2.2.** Every read command is built, tested offline, and was verified end to end against a real workspace (the six PRD success criteria; see the Phase 1.0 entry in the [roadmap](docs/plans/development-roadmap.md)). See [what is not built](#what-is-not-built-yet) before you plan around it.
 
 ---
 
@@ -88,6 +85,8 @@ Granted scopes:
 
 This token holds no write scopes. slackline-read is read-only.
 ```
+
+The manifest does not ask for `identify`; Slack grants it to every user token.
 
 **5. Read something.** Use a channel that exists in your workspace; swap it in for `general` if yours has none by that name.
 
@@ -421,6 +420,7 @@ Named here so nobody plans around a capability that does not exist.
 | Not built | Where it went |
 |-----------|---------------|
 | **Any write capability**: post, reply, react | Roadmap Phase 3.0, `slackline-write`, a separate binary with a separate token, never a flag of `slackline-read`. Deliberately gated behind a phase gate on this one |
+| **Downloading attachments** | Next on the [roadmap](docs/plans/development-roadmap.md). Today a file shows in the transcript as `[file: name (type, size)]`, but its bytes cannot be fetched: that needs the `files:read` scope |
 | **Search** (`search.messages`) | Phase 2.1, maybe. Read-only and allowlist-compatible, but it needs the `search:read` scope and nothing has needed it yet; built only if users ask |
 | **Permalinks** (`--include-permalinks`) | Phase 2.0 |
 | **`--policy` allowlist and denylist files** | Phase 2.0 |

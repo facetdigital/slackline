@@ -32,20 +32,20 @@ These apply to every phase. They are not a cleanup phase at the end.
 
 ### Read attachments, especially images
 
-**Status:** Very soon, by the owner's call on 2026-10-22: "put that into its roadmap for VERY SOON - reading attachments, especially images. We can figure out what that means for OCR and such later." Next, now that Go public is done, ahead of Phase 2.0. Needs a plan (`/gameplan`) before code.
+**Status:** Next, ahead of Phase 2.0. Needs a plan before code.
 
-The token has no `files:read` scope, so a file shared in a DM or channel cannot be fetched: `url_private_download` answers with Slack's HTML login page. The trigger was two DM screenshots on 2026-10-21 (a `.png` and an iOS `.jpg`) that had to be ingested and could not be. Today a file shows up only as a line like `[file: image.png (PNG, 261.0KB)]` in text output, the `jsonl` format drops the `files` array entirely, and only `--format raw` carries the download URL. An earlier motivating case is the same shape: a contractor's monthly time-log CSV, saved by hand every month before it can be reconciled.
+The token has no `files:read` scope, so a file shared in a DM or channel, such as a screenshot or a spreadsheet, cannot be fetched: `url_private_download` answers with Slack's HTML login page. Today a file appears only as a rendered line like `[file: image.png (PNG, 261.0KB)]` inside the message text, in both text and `jsonl` output. Nothing is dropped, but there is no structured file metadata (ID, mime type, size) and no way to get the bytes; only `--format raw` carries the download URL.
 
 What it has to do:
 - Download files attached to messages, images first, to a caller-named directory, and report each saved path with its mime type, size, and the message it came from. Likely shape: a read-only `slackline-read file <id or permalink> --out <dir>` command, or a flag on `conversation` and `thread` that saves a transcript's attachments as it reads. Settle which in planning; both may be wanted.
-- Put file metadata back into the `jsonl` records (ID, name, mime type, size), so a model can see that a message carries a file and which ID to fetch. Nothing silently dropped (invariant 4).
+- Add structured file metadata to the `jsonl` records (ID, name, mime type, size), so a model can see that a message carries a file and which ID to fetch.
 - Stay read-only by construction: the only API change is an addition to the D3 allowlist, the credential comes through the existing chain (D4a, D4b) with no token in argv, and every fetch writes an audit log line that records what was fetched (ID, name, size), never its content (invariant 9).
 
-Owner action first: add `files:read` to the Slack app and reinstall it. Only the app's owner can. Until then `whoami` will not list the scope and every download fails.
+Setup change: the manifest gains `files:read`, so existing users add the scope to their Slack app and reinstall it. Until they do, `whoami` will not list it and every download fails with a clear error.
 
 Design questions to settle in planning: a size ceiling; a refusal for files Slack does not host itself (external and Google Drive links); filename collisions and path safety in the output directory; and what the text renderer prints for a file share (D9) so a model can tell it is fetchable, and with what ID.
 
-Deferred, by the owner: OCR and any text extraction from images or documents. This feature saves the bytes and reports where they are; what reads them comes later.
+Deferred: OCR and any text extraction from images or documents. This feature saves the bytes and reports where they are; what reads them comes later.
 
 ### Phase 2.0: Hardening and ergonomics
 
@@ -57,36 +57,31 @@ completions and CI.
 
 - `--include-permalinks` via `chat.getPermalink`, which is read-only despite the `chat.`
   prefix. Worth confirming during planning rather than assuming from the name.
-- Multiple conversations in one invocation: shipped in the gate fixes (PR 1), with a
-  header and page record per conversation. Any further framing polish lands here.
+- Multiple conversations in one invocation: shipped before v0.2, with a header and page
+  record per conversation. Any further framing polish lands here.
 - `--policy` file support: allowlist and denylist of conversation IDs, plus ceilings, as a
   second layer under the executable boundary.
 - Shell completions.
 - CI: shipped early in v0.1.2 (`.github/workflows/tests.yml`); Step 11 of this phase's
   plan only verifies the checks appear and pass on this phase's own PRs.
-- Slack Connect DM partners cost one `users.info` each on a cold cache: about 112
-  lookups on the first read in the live workspace, 2026-10-01. Correct, and cached for
-  24h afterwards, but worth batching or deferring. Not blocking.
-- Follow-ups recorded by the gate-fix review passes, none blocking: a `page_record()`
-  helper in `transcript.py` so `conversation` and `thread` stop building the record by
-  hand; a page ceiling for `collect` under `--all-pages` with a budget, where a server
-  returning empty pages with a cursor would loop; an optional bound on reply expansion
-  under `--all-pages`; bidi override characters (U+202A..U+202E, U+2066..U+2069) are not
-  stripped from text output; a FIFO planted at the audit log path blocks the open (no
-  `O_NONBLOCK`), which only matters for a user-supplied path in a shared directory.
+- Slack Connect people cost one `users.info` each on a cold cache, which can be a hundred
+  or more calls in a heavily shared workspace. Correct, and cached for 24h afterwards, but
+  worth batching or deferring. Not blocking.
+- Bidi override characters (U+202A..U+202E, U+2066..U+2069) are not stripped from text
+  output. Reply expansion under `--all-pages` is bounded per thread by the page ceiling,
+  not in aggregate.
 
-Seeds from the Read-Only MVP gate (third run), all low or nit:
-- `cache.py`: bring `_ensure_root()` under the same degrade-to-warning rule as the write,
-  so an unwritable, file-shadowed, or dangling-symlink `SLACKLINE_CACHE_DIR` warns and
-  continues instead of exiting 1.
-- `directory.py`: do not cache an index whose final page still carried a cursor after
-  `api.paginate` stopped at its ceiling, or store an `incomplete` flag and warn on load.
-- Roadmap follow-ups bullet above: drop the `page_record()`, `collect` ceiling, and FIFO
-  items PR #14 closed; note reply expansion is bounded per thread; keep the bidi item.
-- `transcript.py`: the `Collected.truncated_by` comment should include `"max-pages"`.
-- Replace the `3 * constant` loop guards in the command and api tests with a fixed literal.
-- `docs/reference.md` "Reading the output": one sentence on the `max-pages` stop and its stderr line.
-- Extend the help-text test to require `parse` and the three-argument `run`.
+Seeds from the Read-Only MVP phase gate, all low or nit. The plan cites them as `Seed-N`:
+1. `cache.py`: bring `_ensure_root()` under the same degrade-to-warning rule as the write,
+   so an unwritable, file-shadowed, or dangling-symlink `SLACKLINE_CACHE_DIR` warns and
+   continues instead of exiting 1.
+2. `directory.py`: do not cache an index whose final page still carried a cursor after
+   `api.paginate` stopped at its ceiling, or store an `incomplete` flag and warn on load.
+3. Trim the follow-ups bullet above to what is still open. Done.
+4. `transcript.py`: the `Collected.truncated_by` comment should include `"max-pages"`.
+5. Replace the `3 * constant` loop guards in the command and api tests with a fixed literal.
+6. `docs/reference.md` "Reading the output": one sentence on the `max-pages` stop and its stderr line.
+7. Extend the help-text test to require `parse` and the three-argument `run`.
 
 ---
 
@@ -108,10 +103,9 @@ that deserves its own design rather than being bolted onto it.
 **Status:** Not planned. Captured so it is not lost; build only when asked.
 
 A caller who wants "anything new in any DM or group DM since T", without naming people,
-today has to read every `im` and `mpim` conversation. On a workspace with about 340 of
-them that is one `conversations.history` call each: about 105 seconds cold, and about
-390 seconds when run again straight away, which looks like Slack's per-method rate
-limit. A read-only way to ask which conversations have activity since T first, then read
+today has to read every `im` and `mpim` conversation. On a workspace with a few hundred
+of them that is one `conversations.history` call each, which takes minutes, and longer
+when run again straight away, once Slack's per-method rate limit engages. A read-only way to ask which conversations have activity since T first, then read
 only those, would turn that into seconds.
 
 Design question to settle first: which read-only method can answer it in a few calls.
@@ -135,16 +129,13 @@ agent.
 
 ### Phase 3.1: Packaging and distribution
 
-**Status:** Not planned. Publication is decided: open source under MIT (see Slackline
-v0.2.0 under Completed).
+**Status:** Not planned. The project is public under MIT and installs from GitHub
+releases. What remains is a PyPI package, whose name is not decided yet.
 
-What remains: the PyPI name, and how much the README has to explain about Slack app
-setup.
-
-**Distribution as a Claude Code plugin (Option C), and the bundling question.** The
-`slackline` skill ships in-repo with a copy-based install. When publication is
-decided, a plugin manifest on top of the same skill directory gives versioned,
-in-place-updatable installs. Design question to settle then, deliberately: a plugin may
+**Distribution as a Claude Code plugin, and the bundling question.** The `slackline`
+skill ships in-repo with a copy-based install. A plugin manifest on top of the same
+skill directory would give versioned, in-place-updatable installs. Design question to
+settle first, deliberately: a plugin may
 *bundle* a copy of the zero-dependency package and run it via `python3 -m` so users need
 no separate install, but the binary must stay independently installable and the read and
 write binaries separately shippable. Skills are instructions, not boundaries: the
@@ -152,222 +143,87 @@ executable boundary (PRD section 2, R3, D2) and per-agent whitelisting require t
 agent can be given the read binary without the write binary ever being on its disk, so
 the skill must never become the owner of both.
 
-**Before any publication**, each of these is replaced or consciously kept (Phase 1.0 gate,
-item 14). Done in v0.2.0: real colleague handles in fixtures, tests, and
-docs are synthetic stand-ins; the owner's real user ID, team ID, team name, and
-workspace URL in `tests/test_cmd_whoami.py` and the docs are placeholders; the real
-group DM name and handles cited as evidence in D6 and the resolver docstrings are
-replaced with stand-ins of the same shape. The owner's own handle is replaced too.
-
 ---
 
 ## Completed
 
 ### Go public
 
-**Status:** Complete, 2026-10-25. `facetdigital/slackline` is public. v0.2.1 passed the owner's manual test pass, and v0.2.2 re-released it with the README trim and the skill fix just before the flip, so the first public release matches the docs. A scan of the full git history before the flip found only synthetic test tokens.
+**Status:** Complete, 2026-10-25. The repository is public, with v0.2.2 as its first public release.
 
-- [x] A colleague reads the README as a newcomer, doing only the quick start, and reports
-  where they skimmed, got lost, or gave up. Requested 2026-10-19.
-  Done 2026-10-20: the install worked end to end, from a clone, including asking Claude about a DM. The notes were about the quick start's Slack app steps, which no longer matched Slack's screens, a missing expected `whoami` output, 1Password reading as the only way to hand an agent the token, and no uninstall steps. The reviewer is a workspace admin, so the run could not show whether a non-admin is blocked at install.
-- [x] Trim the README from those notes, one PR. The quick start now walks Slack's current app-creation screens step by step and shows the expected `whoami` output; the credential chain moved to `docs/credentials.md`, and output, exit codes, the audit log, and the directory cache to `docs/reference.md`; Using with Claude Code leads with the quick start's own `read -rs` token, with 1Password as one option; an Uninstall section was added.
-- [x] A non-admin tries step 2 in other workspaces. Done 2026-10-25: DevSelect let the owner install; Tech DNA refused with "You don't have permission to install apps in Tech DNA. You can still create your app and request to install when you're ready." Whether a non-admin can install depends on the workspace's app settings. The quick start says an admin may need to approve, and step 2 quotes that refusal and says to request the install.
-- [x] The owner flips `facetdigital/slackline` to public. Done 2026-10-25 with `gh repo edit --visibility public`, at the owner's request.
-- [x] Two settings GitHub refuses on a private repository, run right after the flip. Done 2026-10-25 and read back: fork PR approval is `all_external_contributors`, private vulnerability reporting is enabled. The fork setting took only with a JSON body; the same call with `-f approval_policy=...` returned 204 and left the old value.
-  ```bash
-  echo '{"approval_policy":"all_external_contributors"}' | gh api -X PUT \
-    repos/facetdigital/slackline/actions/permissions/fork-pr-contributor-approval --input -
-  gh api -X PUT repos/facetdigital/slackline/private-vulnerability-reporting
-  ```
-- [x] From a signed-out browser: the release badge shows the latest version (it reads
-  "no releases" while private) and the quick start's wheel URL downloads. Done 2026-10-25 by the owner; the downloaded wheel's SHA-256 matches the v0.2.2 release asset.
+Before the flip, a colleague followed the quick start cold. The install worked end to end, from a clone, through asking Claude about a DM. The notes were about the quick start: its Slack app steps no longer matched Slack's screens, it did not show what `whoami` should print, it read as if 1Password were the only way to hand an agent the token, and there were no uninstall steps. The README was rewritten from those notes, and its reference detail moved to `docs/credentials.md` and `docs/reference.md`. A non-admin install was tried in other workspaces: some allow it and some require an admin to approve the app, so the quick start says what a refusal looks like and how to request the install. A scan of the full git history before the flip found only synthetic test tokens.
+
+Right after the flip, fork pull requests were set to need approval for every outside contributor, and private vulnerability reporting was turned on. The fork setting took only with a JSON body; the same call with `-f approval_policy=...` returned 204 and left the old value:
+
+```bash
+echo '{"approval_policy":"all_external_contributors"}' | gh api -X PUT \
+  repos/facetdigital/slackline/actions/permissions/fork-pr-contributor-approval --input -
+gh api -X PUT repos/facetdigital/slackline/private-vulnerability-reporting
+```
 
 ### Slackline v0.2.2: the docs a newcomer reads
 
-**Status:** Complete, 2026-10-25. Tagged `v0.2.2`; the wheel, the source tarball, and the skill zip are attached to the release. Branch `release/v0.2.2`.
+**Status:** Complete, 2026-10-25. Tagged `v0.2.2`, with the wheel, the source tarball, and the skill zip attached.
 
-No code changes. Cut so the first public release carries the README trimmed from a colleague's cold read-through (PR #15) and the skill whose relaunch hint offers the plain `read -rs` path before 1Password. Without it, the release's skill zip and source tarball would have contradicted the README on main.
+No code changes. Cut so the first public release carries the rewritten README and a skill whose relaunch hint offers the plain `read -rs` path before 1Password. Without it, the release's skill zip and source tarball would have contradicted the README on main.
 
 ### Slackline v0.2.1: fixes from the manual test pass
 
-**Status:** Complete, 2026-10-16. Tagged `v0.2.1`; the wheel, the source tarball, and
-the skill zip are attached to the release. Branch `release/v0.2.1`.
+**Status:** Complete, 2026-10-16. Tagged `v0.2.1`, with the wheel, the source tarball, and the skill zip attached.
 
-Batches the code changes made since v0.2.0, all found while the owner walked through
-the release as a newcomer would: archived conversations are marked `(archived)` in the
-text channel list, and a bare name in `--with` is a name search rather than a handle
-(below). Docs from the same pass ride along: a run-without-installing command that
-works, an upgrade command that rebuilds (`--force --reinstall`), and installing the
-skill from a release zip.
+Batches the code changes made since v0.2.0, all found by walking through the release as a newcomer would: archived conversations are marked `(archived)` in the text channel list, and a bare name in `--with` is a name search rather than a handle (below). Docs from the same pass: a run-without-installing command that works, an upgrade command that rebuilds (`--force --reinstall`), and installing the skill from a release zip.
 
 ### A bare name is a name, not a handle
 
-**Status:** Complete, 2026-10-16. Branch `feat/bare-name-selectors`.
+**Status:** Complete, 2026-10-16.
 
-Found in the v0.2.0 manual test pass: `--with Kevin` silently resolved to whoever held
-the handle `kevin` while a second Kevin existed, the guess D8 forbids. An exact handle
-now wins only when the selector starts with `@`; a bare word searches handles, real
-names, and display names together, and two matches are exit 4 with the candidates,
-whose message names `@handle` as the way to pick one. An `@` selector that is nobody's
-handle falls back to the same search. `users --match joan` now lists every Joan for the
-same reason. Recorded under D8 in the architecture doc; the README, the skill, and the
-help for `resolve`, `conversation`, and `thread` say "use `@handle` to pick one person".
+Found in the v0.2.0 manual test pass: `--with Kevin` silently resolved to whoever held the handle `kevin` while a second Kevin existed, the guess D8 forbids. An exact handle now wins only when the selector starts with `@`; a bare word searches handles, real names, and display names together, and two matches are exit 4 with the candidates, whose message names `@handle` as the way to pick one. An `@` selector that is nobody's handle falls back to the same search. `users --match joan` lists every Joan for the same reason. Recorded under D8 in the architecture doc.
 
-The test this reverses was `test_the_at_prefix_is_optional`, which asserted that `joan`
-and `@joan` resolve identically; it is replaced by one asserting the opposite. Every
-other resolver test already named people by `@handle` and is unchanged.
+### Slackline v0.2.0: open-source release prep
 
-### Slackline v0.2.0: public release prep
+**Status:** Complete, 2026-10-01. Tagged `v0.2.0` with a skill-only zip attached. The public history starts here: the repository was recreated with one squashed commit for the open-source release.
 
-**Status:** Complete, 2026-10-01. Tagged `v0.2.0` with a skill-only zip attached. The
-repository was recreated with its history squashed into one commit, and stays private
-until the owner has tested the release.
+*Slackline* is the project; *slackline-read* is the executable that exists today; *slackline-write* will someday be a second, separate executable in the same project, never a mode or flag inside slackline-read. Slackline is not meant to be a full MCP replacement or a full API wrapper. Being read-only by construction is the product, and anything that weakens that promise is out of scope for slackline-read.
 
-**Plan:** [public-release-prep.md](public-release-prep.md), one PR, branch
-`chore/public-release-prep`
-
-Slackline goes open source. *Slackline* is the project; *slackline-read* is the
-executable that exists today; *slackline-write* will someday be a second, separate
-executable in the same project, never a mode or flag inside slackline-read. Slackline is
-not meant to be a full MCP replacement or a full API wrapper. Being read-only by
-construction is the product, and anything that weakens that promise is out of scope for
-slackline-read.
-
-Four items, in order, before the repository goes public:
-1. MIT license, `Copyright (c) 2026 Facet Digital, LLC`, matching the sibling repos, with
-   `pyproject.toml` metadata to match.
-2. External users in shared channels (Slack Connect) render by name, marked `(ext)`,
-   instead of `unknown:` and raw `@U...` IDs: the message's `user_profile` first, then a
-   cached `users.info`, then the ID.
-3. A "What this is not" section in the README.
-4. A publication check of the whole history, not just the working tree. Anything
-   sensitive in history is reported before anything is rewritten. The owner chose a
-   fresh repository with squashed history over rewriting it.
+Delivered: the MIT license and matching `pyproject.toml` metadata; Slack Connect people rendered by name and marked `(ext)` instead of raw IDs (the message's `user_profile` first, then a cached `users.info`, then the ID); a "What this is not" section in the README; and a publication check of the whole history, after which real names, IDs, and workspace details in fixtures, tests, and docs were replaced with synthetic stand-ins of the same shape.
 
 ### Slackline v0.1.2: version tracking, per-repo skill copies, CI
 
-**Status:** Complete, 2026-09-02. One version in four places with VERSION as the number
-of record, test-enforced; the skill documents per-repo copies and where a binary-less
-cloner goes; CI (tests only) pulled forward from Phase 2.0 Step 11.
+**Status:** Complete, 2026-09-02. One version in four places with `VERSION` as the number of record, test-enforced; the skill documents per-repo copies and where someone without the binary goes; CI running the offline suite on Python 3.9 and 3.13.
 
 ### Slackline skill, v0.1.1
 
-**Status:** Complete, 2026-09-01. PR #15, merged with full history after an independent review pass.
+**Status:** Complete, 2026-09-01.
 
-**Plan:** [slackline-skill.md](slackline-skill.md), one PR, branch `feat/slackline-skill`
+A Claude Code skill named `slackline`, shipped in this repo: for any read operation from Slack, agents use `slackline-read` via the skill, never any other method or MCP; the skill takes precedence. Writes are out of scope until `slackline-write` exists, at which point the skill covers both. Credential stance: expect `SLACK_USER_TOKEN`, stop and tell the user when it is missing, never hunt for one. Install is agnostic (in-repo for repo sessions, one `cp -r` for global), with a drift test tying the skill's flags and commands to the CLI's help. Decided against: putting the binary inside the skill directory, because a skill is instructions, not a boundary (D2).
 
-A Claude Code skill named `slackline`, shipped in this repo: for any read operation
-from Slack, agents use `slackline-read` via the skill, never any other method or MCP;
-the skill takes precedence. Writes are explicitly out of scope until `slackline-write`
-exists, at which point the skill covers both. Credential stance: expect
-`SLACK_USER_TOKEN`, stop and tell the user when it is missing, never hunt. Install is
-agnostic (in-repo for repo sessions, one `cp -r` for global), with a drift test tying
-the skill's flags and commands to the CLIs' help. Version bumps to 0.1.1. Pulled ahead
-of Phase 2.0 deliberately: the skill is what puts the tool in play for every agent.
+### Read-Only MVP phase gate and its fixes
 
-### PHASE GATE: Read-Only MVP
+**Status:** Passed, 2026-08-30, on the third run.
 
-Ran 2026-08-28 as an independent review: **PASS_WITH_FINDINGS**, report at
-[phase-gate-read-only-mvp.md](../assessments/phase-gate-read-only-mvp.md); its fix list was
-implemented in PRs #10 to #13. Re-ran 2026-08-30 after those merged:
-**PASS_WITH_FINDINGS** again, report at
-[phase-gate-read-only-mvp-rerun.md](../assessments/phase-gate-read-only-mvp-rerun.md). All
-fourteen items of the first fix list are closed and the high finding is gone; two new
-mediums keep the item open: the offline suite passes only because the gitignored `.env`
-supplies a credential (invariant 10), and `collect` under `--all-pages` is unbounded on a
-server that keeps returning a cursor with empty pages. Plan those two
-before any Phase 2.0 feature; the gate closes on a PASS.
+An independent audit of the MVP, which had to verify rather than assume: that the method allowlist test fails when a write method is introduced, that the token-scrubbing test fails when scrubbing is removed, that no test passes by asserting broken behavior, that no real message content or colleague name entered the repository through fixtures, and that exit codes match D18, including exit 0 on a truncated read.
 
-Specific things this gate must verify rather than assume:
-- The method allowlist test actually fails when a write method is introduced.
-- The token-scrubbing test actually fails when scrubbing is removed.
-- No test passes by asserting broken behavior.
-- No real message content or colleague name entered the repository via fixtures.
-- Exit codes match D18 in practice, and a truncated read really does exit 0.
+The first two runs passed with findings, and the fixes landed before v0.1.1:
+- Exact continuation after a `--max-messages` truncation, by sizing each request to the remaining budget so the ceiling lands on a page boundary; paginated thread replies; `thread_broadcast` deduplication; `--cursor` on `thread`; and several conversations per invocation as a supported feature.
+- `channels --include-archived` shows archived conversations, and `resolve` reports verified group DM member sets.
+- Hardening: audit log permissions, a `Retry-After` cap, terminal control characters stripped, `team_id` validation, text-versus-blocks precedence, `thread` accepting a reply's ts, exit 130 on interrupt.
+- Argument errors exit 2 before any credential is resolved, so the offline suite needs no secret; a page ceiling on `collect`; a symlinked audit path is refused; `--order newest` keeps replies under their root; one shared `page_record()`.
+- Documentation brought back in line with the code.
 
-**Passed 2026-08-30, third run:** report at
-[phase-gate-read-only-mvp-rerun-2.md](../assessments/phase-gate-read-only-mvp-rerun-2.md).
-Suite green in four environments; the allowlist guard, the scrubbing tests, every D18
-code, both exit-0 truncations, and both of the second run's mediums verified by doing.
-Three lows and five nits were recorded and seed Phase 2.0 below.
+A live check after the fixes, read-only: continuation after a truncation returned the next page with zero overlap and no gap; a `--threads full --all-pages` read showed no incomplete threads and no duplicate `ts`; thread continuation was exact, with the observation that Slack returns the parent in addition to `limit` replies (since modeled in the test fake); the audit log file was `0600`.
 
-### Gate re-run fixes
-
-**Status:** Complete, 2026-08-30. PR #14, merged with full history after two independent review passes and a security review.
-
-**Plan:** [gate-rerun-fixes.md](gate-rerun-fixes.md), one PR, branch `fix/gate-rerun`
-
-Close the nine items from the Read-Only MVP gate re-run
-([phase-gate-read-only-mvp-rerun.md](../assessments/phase-gate-read-only-mvp-rerun.md)).
-The two mediums that keep the gate open: argument errors must exit 2 with no credential
-anywhere, so the offline suite needs no secret; and `collect` gets a page ceiling. Then the
-lows and nits: a symlinked audit path is refused, the cache root follows the audit
-directory's rule, `--order newest` keeps replies under their root, the fake models
-Slack's parent-plus-limit reply pages, one shared `page_record()`, and doc corrections.
-
-### Gate fixes PR 4: documentation that did not move with the code
-
-**Status:** Complete, 2026-08-30. PR #13, merged with full history after an independent review pass. All twenty steps of the gate fix plan are done.
-
-**Plan:** [read-only-mvp-gate-fixes.md](read-only-mvp-gate-fixes.md), Steps 17 to 20, branch `docs/gate-followups`
-
-Credential precedence as implemented, README status, architecture layout, stale
-comments, the Phase 3.1 identifier list, and the close-out live check.
-
-**Live results, 2026-08-30, read-only:** the opt-in smoke suite passed (whoami, closed
-pipe, reply-ts redirect); 753 conversations fetched with `--include-archived`, 305 of them
-archived and hidden by default; on a 32-message window, `--all-pages --max-messages 10`
-then `--cursor` returned 10 + 10 with zero overlap, contiguous with a full read; a
-`--threads full --all-pages` read showed 0 incomplete threads and 0 duplicate `ts`; thread
-continuation on a 5-message thread was exact, with the observation that Slack returns the
-parent in addition to `limit` replies (closed by the gate re-run fixes); the reply-ts
-redirect fired and was announced; the audit log file was `0600`.
-
-### Gate fixes PR 3: hardening
-
-**Status:** Complete, 2026-08-30. PR #12, merged with full history after two independent review passes and a security review.
-
-**Plan:** [read-only-mvp-gate-fixes.md](read-only-mvp-gate-fixes.md), Steps 10 to 16, branch `fix/hardening`
-
-Audit log permissions, `Retry-After` cap, terminal control characters, `team_id`
-validation, text-versus-blocks precedence, `thread` given a reply's ts, exit 130.
-Touches the security surface, so the security review applies.
-
-### Gate fixes PR 2: directory and resolver
-
-**Status:** Complete, 2026-08-29. PR #11, merged with full history after two independent review passes.
-
-**Plan:** [read-only-mvp-gate-fixes.md](read-only-mvp-gate-fixes.md), Steps 8 to 9, branch `fix/directory-resolver`
-
-`channels --include-archived` actually shows archived conversations, and `resolve`
-reports verified group DM member sets.
-
-### Gate fixes PR 1: continuation, threads, multi-conversation reads
-
-**Status:** Complete, 2026-08-29. PR #10, merged with full history after two independent review passes.
-
-**Plan:** [read-only-mvp-gate-fixes.md](read-only-mvp-gate-fixes.md), Steps 1 to 7, branch `fix/continuation`
-
-Closes the high finding from the Phase 1.0 gate
-([phase-gate-read-only-mvp.md](../assessments/phase-gate-read-only-mvp.md)): continuation
-after a `--max-messages` truncation, by sizing each request to the remaining budget so
-the ceiling lands on a page boundary. Same loop, same PR: paginated thread replies,
-`thread_broadcast` deduplication, `--cursor` on `thread`, and multi-conversation reads
-as a supported feature.
+The third run passed with three lows and five nits, which seed Phase 2.0 above.
 
 ### Phase 1.0: `slackline-read` MVP
 
-**Goal:** A working, installable, strictly read-only CLI that an agent can use to pull a
-readable transcript out of any conversation the user can see.
+**Goal:** A working, installable, strictly read-only CLI that an agent can use to pull a readable transcript out of any conversation the user can see.
 
 **Status:** Complete, 2026-08-28
-
-**Plan:** [slackline-read-mvp.md](slackline-read-mvp.md)
 
 **Key deliverables:**
 - `slackline-read` on PATH via `uv tool install`, and runnable uninstalled via `python3 -m`
 - Six commands: `whoami`, `channels`, `users`, `resolve`, `conversation`, `thread`
-- Credential chain with environment variable first, no TouchID required (D4a)
+- Credential chain with the environment variable first, no TouchID required (D4a)
 - Method allowlist with a test that prevents widening it (D3)
 - Renderer handling blocks, attachments, files, mentions, links, and subtypes (D9, D10)
 - Member-set-verified group DM resolution (D6)
@@ -376,18 +232,7 @@ readable transcript out of any conversation the user can see.
 - Offline fixture suite, plus an opt-in live smoke test
 - README with agent-facing usage
 
-**Definition of done:** the six success criteria in PRD section 9. All six verified
-against the live workspace on 2026-08-28, read-only, using the installed executable:
-identity confirmed; 398 conversations discovered with no IDs supplied; a three-person
-group DM resolved to exactly one conversation by member set; a 30-day thread-expanded
-transcript returned 205 messages with zero empty renderings, zero unresolved `<@Uxxx>`
-mentions, and zero raw link markup; the trailing page record reported `has_more` and its
-cursor continued into 75 further messages with no overlap; a `--max-messages 5` ceiling
-reported `truncated_by` and still exited 0; and the audit log recorded ten invocations
-with no message content and no token-shaped string.
-
-**Known gap, since closed:** no CI at completion time; shipped in v0.1.2
-(`.github/workflows/tests.yml`, the offline suite on Python 3.9 and 3.13).
+**Definition of done:** the six success criteria in PRD section 9, all verified against a real workspace on 2026-08-28, read-only, using the installed executable: identity confirmed; every accessible conversation discovered with no IDs supplied; a three-person group DM resolved to exactly one conversation by member set; a 30-day thread-expanded transcript with zero empty renderings, zero unresolved `<@Uxxx>` mentions, and zero raw link markup; the trailing page record reported `has_more` and its cursor continued with no overlap; a `--max-messages 5` ceiling reported `truncated_by` and still exited 0; and the audit log recorded every invocation with no message content and no token-shaped string.
 
 ---
 

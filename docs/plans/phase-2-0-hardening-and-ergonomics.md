@@ -30,8 +30,7 @@ feature is designed specifically so the `chat.*` family stays banned wholesale (
 
 **Legend:** `Dn` cites [architecture.md](../architecture/architecture.md). `Pn` cites
 [product-requirements.md](../requirements/product-requirements.md). `Seed-N` cites the
-numbered fix list in
-[phase-gate-read-only-mvp-rerun-2.md](../assessments/phase-gate-read-only-mvp-rerun-2.md).
+numbered seed list in the roadmap's Phase 2.0 entry, from the Read-Only MVP phase gate.
 
 ---
 
@@ -47,7 +46,7 @@ Phase 2.0 hardens the read-only MVP and rounds out its ergonomics, in four PRs:
    ceiling, a second refusal layer under the executable boundary, with new exit code 8
    (new decision D24, D18 amendment).
 4. A `completions` command for bash and zsh, and CI running the offline suite on every
-   PR (unblocked: the suite needs no credential since PR #14).
+   PR (unblocked: the suite needs no credential since the gate fixes).
 
 Phase 2.1 (search) stays out: it needs the `search:read` scope and is built only if users ask.
 
@@ -190,10 +189,10 @@ the whole workspace, and every later invocation inside the TTL would trust it si
 - [ ] `docs/reference.md`, "Reading the output": after the truncation paragraph, one sentence:
   a fetch also stops after 100 pages (`truncated_by: "max-pages"`), announced on
   stderr, with the cursor still usable.
-- [ ] `docs/plans/development-roadmap.md`, the "Follow-ups recorded by the gate-fix
-  review passes" bullet: remove the `page_record()`, `collect` page ceiling, and FIFO
-  items (closed by PR #14); add "reply expansion is bounded per thread by the same page
-  ceiling"; keep the bidi-override item.
+- [x] `docs/plans/development-roadmap.md`, the follow-ups bullet: remove the
+  `page_record()`, `collect` page ceiling, and FIFO items the gate fixes closed; add
+  "reply expansion is bounded per thread by the same page ceiling"; keep the
+  bidi-override item. Done in the pre-launch docs cleanup.
 - [ ] Verify: `grep -n '"max-messages", or None' src/slackline/transcript.py` returns
   nothing; `grep -c "max-pages" docs/reference.md` is at least 1;
   `grep -n "page_record()" docs/plans/development-roadmap.md` returns nothing;
