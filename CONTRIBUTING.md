@@ -109,3 +109,8 @@ names it. The suite fails until all of them agree.
    ```
 4. Publish the release with the wheel, the source tarball, and the skill zip attached:
    `gh release create vX.Y.Z --verify-tag --notes-file NOTES.md /tmp/slackline-X.Y.Z/dist/*`
+5. Update your own installs, which the release does not touch: the binary from the new wheel, and any skill copies you keep in other repos or in `~/.claude/skills`. An agent cutting the release asks its owner before doing this.
+   ```bash
+   uv tool install --force --reinstall https://github.com/facetdigital/slackline/releases/download/vX.Y.Z/slackline-X.Y.Z-py3-none-any.whl
+   slackline-read --version
+   ```
