@@ -32,20 +32,20 @@ These apply to every phase. They are not a cleanup phase at the end.
 
 ### Read attachments, especially images
 
-**Status:** Planned and parked. Next, ahead of Phase 2.0.
+**Status:** Ready to implement. Next, ahead of Phase 2.0.
 
-**Plan:** in draft [PR #19](https://github.com/facetdigital/slackline/pull/19), branch `docs/plan-read-attachments`. The plan, and this entry's decided design, land on main when that PR merges, which happens when implementation starts. Until then the questions below read as open on main, but they are settled in the plan.
+**Plan:** [read-attachments.md](read-attachments.md), one PR, branch `feat/read-attachments`
 
 The token has no `files:read` scope, so a file shared in a DM or channel, such as a screenshot or a spreadsheet, cannot be fetched: `url_private_download` answers with Slack's HTML login page. Today a file appears only as a rendered line like `[file: image.png (PNG, 261.0KB)]` inside the message text, in both text and `jsonl` output. Nothing is dropped, but there is no structured file metadata (ID, mime type, size) and no way to get the bytes; only `--format raw` carries the download URL.
 
-What it has to do:
-- Download files attached to messages, images first, to a caller-named directory, and report each saved path with its mime type, size, and the message it came from. Likely shape: a read-only `slackline-read file <id or permalink> --out <dir>` command, or a flag on `conversation` and `thread` that saves a transcript's attachments as it reads. Settle which in planning; both may be wanted.
-- Add structured file metadata to the `jsonl` records (ID, name, mime type, size), so a model can see that a message carries a file and which ID to fetch.
-- Stay read-only by construction: the only API change is an addition to the D3 allowlist, the credential comes through the existing chain (D4a, D4b) with no token in argv, and every fetch writes an audit log line that records what was fetched (ID, name, size), never its content (invariant 9).
+Decided in planning, detail in the plan:
+- A `files` command saves the attachments of one message, selected by conversation and `--ts` or by a message permalink, into a directory the caller names. `--save-files DIR` on `conversation` and `thread` does the same while reading, bounded by `--max-files`. Every attachment yields a record, saved with its path or skipped with a reason.
+- JSONL message records gain a `files` array (ID, name, mime type, size, and more), and the text transcript shows each file's ID.
+- The D3 method allowlist does not change: a file is found through its message, never by `files.info`. A download is guarded separately (new D25): the token goes only to `files.slack.com` over HTTPS, redirects are checked hop by hop, and only `api.py` may open a network connection.
+- Files are saved as `<FILE_ID>-<cleaned name>`, owner-only, moved into place atomically, never outside the output directory, and capped by `--max-bytes`. Files Slack does not host, deleted files, and oversized files are skipped with a reason (new D26).
+- The audit log records each download's file ID, mime type, and size, never its name or path (invariant 9).
 
-Setup change: the manifest gains `files:read`, so existing users add the scope to their Slack app and reinstall it. Until they do, `whoami` will not list it and every download fails with a clear error.
-
-Design questions to settle in planning: a size ceiling; a refusal for files Slack does not host itself (external and Google Drive links); filename collisions and path safety in the output directory; and what the text renderer prints for a file share (D9) so a model can tell it is fetchable, and with what ID.
+Setup change: the manifest gains `files:read`, so existing users add the scope to their Slack app and reinstall it. Until they do, downloads fail with exit 3 and a message saying so.
 
 Deferred: OCR and any text extraction from images or documents. This feature saves the bytes and reports where they are; what reads them comes later.
 
