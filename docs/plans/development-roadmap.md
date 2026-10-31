@@ -132,7 +132,7 @@ agent.
 ### Phase 3.1: Packaging and distribution
 
 **Status:** Not planned. The project is public under MIT and installs from GitHub
-releases. What remains is a PyPI package, whose name is not decided yet.
+releases. What remains is a PyPI package, whose name is not decided yet. Checked 2026-10-30: `slackline` is taken by an unrelated project (a 0.1.0 command-line skeleton); `slackline-read` and `slackline-cli` were free.
 
 **Distribution as a Claude Code plugin, and the bundling question.** The `slackline`
 skill ships in-repo with a copy-based install. A plugin manifest on top of the same

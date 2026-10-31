@@ -110,6 +110,8 @@ added still answered the credential chain; and `grep -c` was used to count recor
 cache file that is one line of JSON. A "nothing to fall back on" test must remove every
 source in `auth.SOURCE_ORDER`, not just the environment variable.
 
+The person who ran it need not be the writer. Steps written from someone's own tested walkthrough count as run, and when the owner says that walkthrough can be trusted, do not add a task to click through it again. In the 2026-10 README rewrite, the quick start's Slack app steps came from a colleague's tested run; a "walk step 2 once more before the flip" item was added to the roadmap anyway, and the owner had to ask for it to be removed.
+
 ## Layout
 
 | File | Holds |
