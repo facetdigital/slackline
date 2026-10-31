@@ -32,7 +32,9 @@ These apply to every phase. They are not a cleanup phase at the end.
 
 ### Read attachments, especially images
 
-**Status:** Next, ahead of Phase 2.0. Needs a plan before code.
+**Status:** Planned and parked. Next, ahead of Phase 2.0.
+
+**Plan:** in draft [PR #19](https://github.com/facetdigital/slackline/pull/19), branch `docs/plan-read-attachments`. The plan, and this entry's decided design, land on main when that PR merges, which happens when implementation starts. Until then the questions below read as open on main, but they are settled in the plan.
 
 The token has no `files:read` scope, so a file shared in a DM or channel, such as a screenshot or a spreadsheet, cannot be fetched: `url_private_download` answers with Slack's HTML login page. Today a file appears only as a rendered line like `[file: image.png (PNG, 261.0KB)]` inside the message text, in both text and `jsonl` output. Nothing is dropped, but there is no structured file metadata (ID, mime type, size) and no way to get the bytes; only `--format raw` carries the download URL.
 
